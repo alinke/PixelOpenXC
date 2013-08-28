@@ -1,0 +1,177 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+           <TextView
+               android:id="@+id/fuel_level"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/gear"
+               android:layout_below="@+id/pedal_position"
+               android:text="*** Fuel Level - No Data ***" />
+
+           <TextView
+               android:id="@+id/pedal_position"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/vehicle_speed"
+               android:layout_below="@+id/vehicle_speed"
+               android:text="*** Pedal Position - No Data ***" />
+
+           <TextView
+               android:id="@+id/steering_wheel"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/vehicle_speed"
+               android:layout_below="@+id/brake_status"
+               android:text="" />
+
+           <TextView
+               android:id="@+id/vehicle_speed"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/brake_status"
+               android:layout_alignTop="@+id/steering_wheel"
+               android:text="*** Speed - No Data ***" />
+
+           <TextView
+               android:id="@+id/gear"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/steering_wheel"
+               android:layout_below="@+id/fuel_level"
+               android:text="*** Current Gear - No Data ***" />
+
+           <TextView
+               android:id="@+id/fuel_consumed"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/gear"
+               android:layout_below="@+id/gear"
+               android:text="*** Fuel Consumed - No Data ***" />
+
+           <TextView
+               android:id="@+id/door"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/fuel_consumed"
+               android:layout_below="@+id/fuel_consumed"
+               android:text="*** Door Open or Not - No Data ***" />
+
+           <TextView
+               android:id="@+id/odometer"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/door"
+               android:layout_below="@+id/door"
+               android:text="*** Odometer - No Data ***" />
+
+           <TextView
+               android:id="@+id/wipers"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/odometer"
+               android:layout_below="@+id/odometer"
+               android:text="*** Wipers - No Data ***" />
+
+           <TextView
+               android:id="@+id/highbeams"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/wipers"
+               android:layout_below="@+id/wipers"
+               android:text="*** Highbeams - No Data ***" />
+
+           <TextView
+               android:id="@+id/lights"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignLeft="@+id/turn_signal"
+               android:layout_below="@+id/highbeams"
+               android:text="*** Head Lamp - No Data ***" />
+
+           <TextView
+               android:id="@+id/turn_signal"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignParentLeft="true"
+               android:layout_below="@+id/lights"
+               android:layout_marginLeft="30dp"
+               android:text="*** Turn Signal - No Data ***" />
+
+           <TextView
+               android:id="@+id/brake_status"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignParentLeft="true"
+               android:layout_alignParentTop="true"
+               android:layout_marginLeft="18dp"
+               android:layout_marginTop="34dp"
+               android:text="*** Brake - No Data ***" />
+
+              <TextView
+                  android:id="@+id/button_status"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignRight="@+id/highbeams"
+                  android:layout_below="@+id/turn_signal"
+                  android:text="*** Button Status - No Data ***" />
+
+              <TextView
+                  android:id="@+id/proxSensor"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignRight="@+id/lights"
+                  android:layout_below="@+id/button_status"
+                  android:text="*** Prox Sensor - No Data ***" />
+
+              <TextView
+                  android:id="@+id/buttonOne"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignLeft="@+id/turn_signal"
+                  android:layout_below="@+id/proxSensor"
+                  android:text="*** Button One - No Data ***" />
+
+              <TextView
+                  android:id="@+id/buttonTwo"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignLeft="@+id/buttonOne"
+                  android:layout_below="@+id/buttonOne"
+                  android:text="*** Button Two - No Data ***" />
+
+              <Button
+                  android:id="@+id/tongue_button"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignLeft="@+id/highbeams"
+                  android:layout_below="@+id/buttonTwo"
+                  android:layout_marginTop="16dp"
+                  android:text="Tongue" />
+
+              <Button
+                  android:id="@+id/thanks_button"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignLeft="@+id/tongue_button"
+                  android:layout_below="@+id/fu_button"
+                  android:text="Thanks" />
+
+              <Button
+                  android:id="@+id/fu_button"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignLeft="@+id/thanks_button"
+                  android:layout_below="@+id/tongue_button"
+                  android:text="FU" />
+
+         android:layout_marginTop="86dp" />
+
+</RelativeLayout>

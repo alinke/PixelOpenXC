@@ -3,9 +3,8 @@
 
     <string name="app_name">PIXEL OpenXC v2</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     
-      <string name="menu_about_title">About</string> 
+    <string name="menu_about_title">About</string> 
     <string name="menu_about_summary">http://ledpixelart.com\n\nDesigned by Open Gadgets LLC</string>
     <string name="versionString">Version</string> 
     
@@ -15,9 +14,9 @@
    <string name="setupInstructionsString">Pair your Android device to PIXEL which will show up as \'PIXEL\' in Bluetooth using code 4545.\n\nPhotos taken within this app will display on PIXEL.\n\nClose-up photos with solid backgrounds will produce the best results.\n\nNote the last photo will remain displayed on PIXEL even after your Android device is switched off.</string>
    <string name="setupInstructionsStringTitle">Instructions</string>   
      
-    <string name="prefTitle">PIXEL Photo Settings</string>
+    <string name="prefTitle">PIXEL OpenXC Settings</string>
     <string name="menu_prefs_title">Settings</string>
-    <string name="prefSummary">PIXEL Photo Settings</string>
+    <string name="prefSummary">PIXEL OpenXC Settings</string>
      
     <string name="OKText">OK</string>   
     <string name="notFoundString">PIXEL Not Found</string>   
@@ -31,7 +30,8 @@
     <string name="bluetooth_pair">Blueooth Pairing</string>
     <string name="bluetooth_pairSummary">Shortcut to the Bluetooth settings screen. Pair to PIXEL using code: 4545</string>
     
-    <string name="noSleep">Disable Power Savings</string>    
+    <string name="noSleep">Disable Power Savings</string>  
+    <string name="pref_noSleep">pref_noSleep</string> 
     <string name="pref_noSleepDefault">false</string>
     <string name="noSleepSummary">Forces the app to be always on, your device will not go into power savings mode while this app is running. Good if using as a Kiosk for example. </string>
     
@@ -39,6 +39,99 @@
     <string name="pref_debugMode">pref_debugMode</string>
     <string name="pref_debugModeDefault">false</string>    
     <string name="debugModeSummary">Displays debug messages, use to see how often the Bluetooth connections are getting disconnected and connected as well as other debug messages</string>
+  
+    <string name="soundSettings">Sound Settings</string>    
+    <string name="PIXELSettings">PIXEL Display</string>    
     
+    <string name="pedalSound">Pedal</string>    
+    <string name="pref_pedalSound">pref_pedalSound</string>
+    <string name="pedalSoundDefault">false</string>    
+    <string name="pedalSoundSummary"></string>
+    
+    <string name="msgSound">Messages</string>    
+    <string name="pref_msgSound">pref_msgSound</string>
+    <string name="msgSoundDefault">true</string>    
+    <string name="msgSoundSummary"></string>
+    
+    <string name="gearSound">Gear Changes</string>    
+    <string name="pref_gearSound">pref_gearSound</string>
+    <string name="gearSoundDefault">true</string>    
+    <string name="gearSoundSummary"></string>
+    
+    <string name="gasConsumedSound">Gas Consumed</string>    
+    <string name="pref_gasConsumedSound">pref_gasConsumedSound</string>
+    <string name="gasConsumedSoundDefault">true</string>    
+    <string name="gasConsumedSoundSummary"></string>
+    
+    <string name="HeadlightSound">Headlights</string>    
+    <string name="pref_HeadlightSound">pref_HeadlightSound</string>
+    <string name="HeadlightSoundDefault">true</string>    
+    <string name="HeadlightSoundSummary"></string>
+
+    <string name="highBeamSound">High Beams</string>    
+    <string name="pref_highBeamSound">pref_highBeamSound</string>
+    <string name="highBeamSoundDefault">true</string>    
+    <string name="highBeamSoundSummary"></string>
+    
+    <string name="highSpeedAlarmSound">High Speed</string>    
+    <string name="pref_highSpeedAlarmSound">pref_highSpeedAlarmSound</string>
+    <string name="highSpeedAlarmSoundDefault">true</string>    
+    <string name="highSpeedAlarmSoundSummary"></string>
+   
+    <string name="ignitionSound">Ignition</string>    
+    <string name="pref_ignitionSound">pref_ignitionSound</string>
+    <string name="ignitionSoundDefault">true</string>    
+    <string name="ignitionSoundSummary"></string>
+  
+    <string name="wipersSound">Wipers</string>    
+    <string name="pref_wipersSound">pref_wipersSound</string>
+    <string name="wipersSoundDefault">true</string>    
+    <string name="wipersSoundSummary"></string>
+    
+    <string name="enablePedal">Pedal Indicator</string>    
+    <string name="pref_enablePedal">pref_enablePedal</string>
+    <string name="enablePedalDefault">true</string>    
+    <string name="enablePedalSummary"></string>
+    
+    <string name="enableIOIOButtons">Enable Message Buttons</string>    
+    <string name="pref_enableIOIOButtons">pref_enableIOIOButtons</string>
+    <string name="enableIOIOButtonsDefault">false</string>    
+    <string name="enableIOIOButtonsSummary"></string>
+    
+    <string name="enablePIXEL">Enable PIXEL</string>    
+    <string name="pref_enablePIXEL">pref_enablePIXEL</string>
+    <string name="enablePIXELDefault">false</string>    
+    <string name="enablePIXELSummary"></string>
+    
+    <string name="highSpeedSMS">Send Text on High Speed</string>    
+    <string name="pref_highSpeedSMS">pref_highSpeedSMS</string>
+    <string name="highSpeedSMSDefault">true</string>    
+    <string name="highSpeedSMSSummary"></string>
+    
+    <string name="highSpeedSMSThreshold">High Speed Threshold (km/h)</string>    
+    <string name="pref_highSpeedSMSThreshold">pref_speedLimitThreshold</string>
+    <string name="highSpeedSMSThresholdDefault">80</string>
+    <string name="highSpeedSMSThresholdSummary">An alarm will sound when the speed goes above this limit</string>
+    
+   <string name="speedLimitThreshold">Rapid Deceleration Display Time</string>    
+   <string name="pref_speedLimitThreshold">pref_speedLimitThreshold</string>
+   <string name="speedLimitThresholdDefault">80</string>
+   <string name="speedLimitThresholdSummary">An alarm will sound when the speed goes above this limit</string>
+    
+    <string name="rapidBrakeInterval">Rapid Deceleration Sample Interval</string>    
+    <string name="pref_rapidBrakeInterval">pref_rapidBrakeInterval</string>
+    <string name="rapidBrakeIntervalDefault">1</string>
+    <string name="rapidBrakeIntervalSummary">Duration in seconds in between speed readings</string>
+    
+   <string name="rapidBrakeRate">Rapid Deceleration Threshold</string>    
+   <string name="pref_rapidBrakeRate">pref_rapidBrakeInterval</string>
+   <string name="rapidBrakeRateDefault">3</string>
+   <string name="rapidBrakeRateSummary">For the sample interval, if the delta is higher than this threshold in km/h, we trigger a rapid deceleration indicator event</string>
+   
+   <string name="rapidBrakeDisplayTime">Rapid Deceleration Display Time</string>    
+   <string name="pref_rapidBrakeDisplayTime">pref_rapidBrakeInterval</string>
+   <string name="rapidBrakeDisplayTimeDefault">3</string>
+   <string name="rapidBrakeDisplayTimeSummary">How many seconds to display the rapid deceleration indicator</string>
+          
 
 </resources>

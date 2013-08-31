@@ -231,11 +231,43 @@ public class MainActivity extends IOIOActivity {
     final static int THANKS = 14;
     final static int BIRD = 15;
     final static int TONGUE = 16;
+    final static int GAS_DROP = 17;
+    final static int DANGER = 18;
+    final static int SHIFT_DOWN = 19;
+    final static int SHIFT_UP = 20;
+    final static int LIGHTS_ON = 21;
+    final static int LIGHTS_OFF = 22;
+    final static int HIGHBEAM_ON = 23;
+    final static int BUBBLES = 24;
+    final static int POWERUP = 25;
+    final static int POWERUP2 = 26;
+    final static int RAYGUN = 27;
     
     private float  streamVolume;
     
     private boolean buttonSounds = true;
     private boolean acceleratorSounds = false;
+    
+    private boolean _pedalSound;
+    private boolean _msgSound;
+    private boolean _gearSound;
+    private boolean _gasConsumedSound;
+    private boolean _HeadlightSound;
+    private boolean _highBeamSound;
+    private boolean _highSpeedAlarmSound;
+    private boolean _ignitionSound;
+    private boolean _wipersSound;
+    
+    private boolean _enablePedal;
+    private boolean _enableIOIOButtons;
+    private boolean _enablePIXEL;
+    private boolean _highSpeedSMS;
+    private int _highSpeedSMSThreshold;
+    
+   // private int _speedLimitThreshold;
+    private int _rapidBrakeInterval;
+    private int _rapidBrakeRate;
+    private int _rapidBrakeDisplayTime;
     
     
     @Override
@@ -327,6 +359,27 @@ public class MainActivity extends IOIOActivity {
         mSoundPoolMap.put(THANKS, mSoundPool.load(this, R.raw.uthanks, 1));
         mSoundPoolMap.put(BIRD, mSoundPool.load(this, R.raw.ubird, 1));
         mSoundPoolMap.put(TONGUE, mSoundPool.load(this, R.raw.utongue, 1));
+        
+        mSoundPoolMap.put(GAS_DROP, mSoundPool.load(this, R.raw.gas_drop, 1));
+        mSoundPoolMap.put(DANGER, mSoundPool.load(this, R.raw.danger, 1));
+        
+        mSoundPoolMap.put(SHIFT_DOWN, mSoundPool.load(this, R.raw.shiftdown, 1));
+        mSoundPoolMap.put(SHIFT_UP, mSoundPool.load(this, R.raw.shiftup, 1));
+        
+        mSoundPoolMap.put(LIGHTS_ON, mSoundPool.load(this, R.raw.lights, 1));
+        mSoundPoolMap.put(LIGHTS_OFF, mSoundPool.load(this, R.raw.lights, 1));
+        mSoundPoolMap.put(HIGHBEAM_ON, mSoundPool.load(this, R.raw.highbeam, 1));
+        mSoundPoolMap.put(BUBBLES, mSoundPool.load(this, R.raw.bubbles, 1));
+        
+        mSoundPoolMap.put(POWERUP, mSoundPool.load(this, R.raw.powerup, 1));
+        mSoundPoolMap.put(POWERUP2, mSoundPool.load(this, R.raw.powerup2, 1));
+        mSoundPoolMap.put(RAYGUN, mSoundPool.load(this, R.raw.raygun, 1));
+        
+     
+       
+        
+        
+        
         
     	streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         streamVolume = streamVolume / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -511,7 +564,7 @@ public class MainActivity extends IOIOActivity {
    private void UpdateRapidBrake()  {
        i++;
 			
-		if (i == rapidBrakeDisplayTime) {  //how long to display the rapidBrake image
+		if (i == _rapidBrakeDisplayTime) {  //how long to display the rapidBrake image
 				_rapidBrakeTimer.cancel();
 	       		i = 0;
 	       		rapidBrakeTimerRunning = 0;
@@ -547,6 +600,12 @@ public class MainActivity extends IOIOActivity {
        i++;
 		if (i > 48) {  //hold the image for 3 seconds and then set back to normal
 		 		_tongueTimer.cancel();
+		 		try {
+					clearMatrixImage();
+				} catch (ConnectionLostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	       		i = 0;
 	       		tongueTimerRunning = 0;
 				currentPriority = 0;
@@ -583,6 +642,12 @@ final Runnable TongueRunnable = new Runnable() {
 				
 				if (i == 60) {  //hold the image for 3 seconds and then set back to normal
 				 		_birdTimer.cancel();
+				 		try {
+							clearMatrixImage();
+						} catch (ConnectionLostException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 			       		i = 0;
 			       		button2TimerRunning = 0;
 						currentPriority = 0;
@@ -620,6 +685,12 @@ final Runnable TongueRunnable = new Runnable() {
 		       
 		       if (z == 50) {  //we've play it long enough so let's end
 			 		_thxTimer.cancel();
+			 		try {
+						clearMatrixImage();
+					} catch (ConnectionLostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 		       		i = 0;
 		       		z = 0;
 		       		button1TimerRunning = 0;
@@ -873,7 +944,39 @@ final Runnable TongueRunnable = new Runnable() {
     noSleep = prefs.getBoolean("pref_noSleep", false);     
     debug_ = prefs.getBoolean("pref_debugMode", false);
     
-    matrix_model = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
+    _pedalSound = prefs.getBoolean("pref_pedalSound", false);
+    _msgSound = prefs.getBoolean("pref_msgSound", false);
+    _gearSound = prefs.getBoolean("pref_gearSound", false);
+    _gasConsumedSound = prefs.getBoolean("pref_gasConsumedSound", false);
+    _HeadlightSound = prefs.getBoolean("pref_HeadlightSound", false);
+    _highBeamSound = prefs.getBoolean("pref_highBeamSound", false);
+    _highSpeedAlarmSound = prefs.getBoolean("pref_highSpeedAlarmSound", false);
+    _ignitionSound = prefs.getBoolean("pref_ignitionSound", false);
+    _wipersSound = prefs.getBoolean("pref_wipersSound", false);
+    
+    _enablePedal = prefs.getBoolean("pref_enablePedal", false);
+    _enableIOIOButtons = prefs.getBoolean("pref_enableIOIOButtons", false);
+    _enablePIXEL = prefs.getBoolean("pref_enablePIXEL", false);
+    
+    _highSpeedSMS = prefs.getBoolean("pref_highSpeedSMS", false);
+    
+    _highSpeedSMSThreshold = Integer.valueOf(prefs.getString(   
+   	        resources.getString(R.string.pref_speedLimitThreshold),
+   	        resources.getString(R.string.highSpeedSMSThresholdDefault))); 
+    
+    _rapidBrakeInterval = Integer.valueOf(prefs.getString(   
+   	        resources.getString(R.string.pref_rapidBrakeInterval),
+   	        resources.getString(R.string.rapidBrakeIntervalDefault))); 
+    
+    _rapidBrakeRate = Integer.valueOf(prefs.getString(   
+   	        resources.getString(R.string.pref_rapidBrakeRate),
+   	        resources.getString(R.string.rapidBrakeRateDefault))); 
+    
+    _rapidBrakeDisplayTime = Integer.valueOf(prefs.getString(   
+   	        resources.getString(R.string.pref_rapidBrakeDisplayTime),
+   	        resources.getString(R.string.rapidBrakeDisplayTimeDefault))); 
+    
+     matrix_model = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
    	        resources.getString(R.string.selected_matrix),
    	        resources.getString(R.string.matrix_default_value))); 
     
@@ -1284,21 +1387,26 @@ final Runnable TongueRunnable = new Runnable() {
 	//			e.printStackTrace();
 	//		}
 	        
-	        try {
-				mVehicleManager.addListener(AcceleratorPedalPosition.class, mPedalListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
-	        
-	        try {
-				mVehicleManager.addListener(VehicleButtonEvent.class, mButtonEventWiperListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
+	       if (_enablePedal == true) { 
+		       try {
+					mVehicleManager.addListener(AcceleratorPedalPosition.class, mPedalListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+	       }
+	       
+	       
+	       if (_wipersSound == true) {
+		       try {
+					mVehicleManager.addListener(VehicleButtonEvent.class, mButtonEventWiperListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+	       }
 	        
 	        
 	        
@@ -1309,14 +1417,24 @@ final Runnable TongueRunnable = new Runnable() {
 	//		} catch (UnrecognizedMeasurementTypeException e) {
 	//			e.printStackTrace();
 	//		}
+	       
+	   	//  private boolean ;
+		 	  //  private boolean _gasConsumedSound;
+		 	 // ;
+		 	  //  private boolean ;
+		 	  //  private boolean _highSpeedAlarmSound;
+		 	  //  private boolean _ignitionSound;
+		 	  //  private boolean _wipersSound;
+		 	
+		 	//if (_HeadlightSound == true)  {
 	        
-	 //       try {
-	//			mVehicleManager.addListener(FuelConsumed.class, mFuelConsumedListener);
-	//		} catch (VehicleServiceException e) {
-	//			e.printStackTrace();
-	//		} catch (UnrecognizedMeasurementTypeException e) {
-	//			e.printStackTrace();
-		//	}
+	        try {
+				mVehicleManager.addListener(FuelConsumed.class, mFuelConsumedListener);
+			} catch (VehicleServiceException e) {
+				e.printStackTrace();
+			} catch (UnrecognizedMeasurementTypeException e) {
+				e.printStackTrace();
+			}
 	        
 	        //add some sound effect for fuel consumed, that would be cool!
 	        
@@ -1328,29 +1446,52 @@ final Runnable TongueRunnable = new Runnable() {
 				e.printStackTrace();
 			}
 	        
-	        try {
-				mVehicleManager.addListener(HeadlampStatus.class, mHeadLampListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
 	        
-	        try {
-				mVehicleManager.addListener(HighBeamStatus.class, mHighBeamListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
+	       // private boolean _pedalSound;
+	       // private boolean _msgSound;
+	       // private boolean _gearSound;
+	       // private boolean _gasConsumedSound;
+	       // private boolean _HeadlightSound;
+	       // private boolean _highBeamSound;
+	       // private boolean _highSpeedAlarmSound;
+	       // private boolean _ignitionSound;
+	       // private boolean ;
 	        
-	        try {
-				mVehicleManager.addListener(WindshieldWiperStatus.class, mWindshieldWiperListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
+	       // private boolean _enablePedal;
+	       // private boolean _enableIOIOButtons;
+	       // private boolean _enablePIXEL;
+	       // private boolean _highSpeedSMS;
+	       // private int _highSpeedSMSThreshold;
+	        
+	        if (_HeadlightSound == true) {
+		        try {
+					mVehicleManager.addListener(HeadlampStatus.class, mHeadLampListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+	        }
+	        
+	        if (_highBeamSound == true) {
+		        try {
+					mVehicleManager.addListener(HighBeamStatus.class, mHighBeamListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+	        }
+	        
+	        if (_wipersSound == true) {
+		        try {
+					mVehicleManager.addListener(WindshieldWiperStatus.class, mWindshieldWiperListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+	        }
 	        
 	    //    try {
 	//			mVehicleManager.addListener(Odometer.class, mOdometerListener);
@@ -1368,14 +1509,15 @@ final Runnable TongueRunnable = new Runnable() {
 	//			e.printStackTrace();
 	//		}
 	        
-	        try {
-				mVehicleManager.addListener(TransmissionGearPosition.class, mGearListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
-	        
+	    if (_gearSound == true) {
+		        try {
+					mVehicleManager.addListener(TransmissionGearPosition.class, mGearListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+	        }
 	    }
  
 	    // Called when the connection with the service disconnects unexpectedly
@@ -1411,7 +1553,7 @@ final Runnable TongueRunnable = new Runnable() {
 	                }
 	                else {
 	                	
-	                	if (v == rapidBrakeInterval * 4) {  //if we are checking the speed for a rapid deceleation event every second for example, then this will be 1 * 4 , 4 because the ford rate api for speed is 4 Hz or 4 measurements per second
+	                	if (v == _rapidBrakeInterval * 4) {  //if we are checking the speed for a rapid deceleation event every second for example, then this will be 1 * 4 , 4 because the ford rate api for speed is 4 Hz or 4 measurements per second
 	                		currentSpeed = _speed.getValue().doubleValue();
 	                		v = 0;
 	                	}
@@ -1426,7 +1568,7 @@ final Runnable TongueRunnable = new Runnable() {
 	                speedDelta = previousSpeed - currentSpeed; 
 	                Log.w("openxc", "Speed Delta: " + speedDelta);
 	                
-	                if ((speedDelta > rapidBrakeRate) && (rapidBrakePriority >= currentPriority) && (pixelFound == 1)) { //default rapidBrakeRate is 2 km/h deacceleration in 1 second
+	                if ((speedDelta > _rapidBrakeRate) && (rapidBrakePriority >= currentPriority) && (pixelFound == 1)) { //default rapidBrakeRate is 2 km/h deacceleration in 1 second
 	                	    currentPriority = rapidBrakePriority;
 	                		//************************************************
 	                		//now kill other timers that may have been running
@@ -1509,6 +1651,7 @@ final Runnable TongueRunnable = new Runnable() {
 	    	final BrakePedalStatus _brakeStatus = (BrakePedalStatus) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
+	            	
 	            	mVehicleBrakeView.setText(
 	                    //"Brake Status: " + _brakeStatus.getValue().doubleValue());
 	            	 	"Brake Status: " + _brakeStatus.getValue().booleanValue());
@@ -1702,6 +1845,9 @@ final Runnable TongueRunnable = new Runnable() {
 		            	     }
 		            	     
 		            	     currentPriority = pedalPriority; //we've set the display priority to the pedal
+		            	     
+		            	     
+		            	     
 	            	}   
 	            	 //    Log.w("openxc", String.valueOf(pedalRange)); 
 	            }
@@ -1770,40 +1916,43 @@ final Runnable TongueRunnable = new Runnable() {
 	   // }
 //	};
 	
-//	FuelConsumed.Listener mFuelConsumedListener = new FuelConsumed.Listener() {
-	//    public void receive(Measurement measurement) {
-	 //   	final FuelConsumed _fullConsumed = (FuelConsumed) measurement;
-	  //      MainActivity.this.runOnUiThread(new Runnable() {
-	   //         public void run() {
-	    //        	mVehicleFuelConsumedView.setText(
-	     //       	 	"Fuel Consumed Since Start: " + _fullConsumed.getValue().doubleValue());
-	     //       }
-	     //   });
-	   // }
-//	};
-	
-	
-	HeadlampStatus.Listener mHeadLampListener = new HeadlampStatus.Listener() {
+	FuelConsumed.Listener mFuelConsumedListener = new FuelConsumed.Listener() {
 	    public void receive(Measurement measurement) {
-	    	final HeadlampStatus _headLamp = (HeadlampStatus) measurement;
+	    	final FuelConsumed _fullConsumed = (FuelConsumed) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
-	            	mVehicleLightsView.setText("Head Lamp: " + _headLamp.getValue());
+	            	mVehicleFuelConsumedView.setText(
+	            	 	"Fuel Consumed Since Start: " + _fullConsumed.getValue().doubleValue());
 	            }
 	        });
 	    }
 	};
 	
-	HighBeamStatus.Listener mHighBeamListener = new HighBeamStatus.Listener() {
-	    public void receive(Measurement measurement) {
-	    	final HighBeamStatus _headBeam = (HighBeamStatus) measurement;
-	        MainActivity.this.runOnUiThread(new Runnable() {
-	            public void run() {
-	            	mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue());
-	            }
-	        });
-	    }
-	};
+
+	 	HeadlampStatus.Listener mHeadLampListener = new HeadlampStatus.Listener() {
+		    public void receive(Measurement measurement) {
+		    	final HeadlampStatus _headLamp = (HeadlampStatus) measurement;
+		        MainActivity.this.runOnUiThread(new Runnable() {
+		            public void run() {
+		            	mVehicleLightsView.setText("Head Lamp: " + _headLamp.getValue());
+		            }
+		        });
+		    }
+		};
+
+	
+	
+		HighBeamStatus.Listener mHighBeamListener = new HighBeamStatus.Listener() {
+		    public void receive(Measurement measurement) {
+		    	final HighBeamStatus _headBeam = (HighBeamStatus) measurement;
+		        MainActivity.this.runOnUiThread(new Runnable() {
+		            public void run() {
+		            	mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue());
+		            }
+		        });
+		    }
+		};
+	
 	
 	
 	
@@ -1838,6 +1987,12 @@ final Runnable TongueRunnable = new Runnable() {
 	            public void run() {
 	            	mVehicleGearView.setText(
 	            	 	"Gear: " + _gear.getValue());
+	            	
+	            	mSoundPool.stop(mStream1);
+	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+	    	   	
+	            	
+	            	
 	           }
 	        });
 	    }

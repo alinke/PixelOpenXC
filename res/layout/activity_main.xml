@@ -172,6 +172,15 @@
                   android:layout_below="@+id/tongue_button"
                   android:text="FU" />
 
+              <TextView
+                  android:id="@+id/tripCost"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignTop="@+id/brake_status"
+                  android:layout_toRightOf="@+id/door"
+                  android:text="*** Trip Cost ***"
+                  android:textAppearance="?android:attr/textAppearanceLarge" />
+
          android:layout_marginTop="86dp" />
 
 </RelativeLayout>

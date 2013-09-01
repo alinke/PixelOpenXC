@@ -68,6 +68,27 @@
     android:defaultValue="@string/gasConsumedSoundDefault"
     android:summary="@string/gasConsumedSoundSummary"/>
      
+    <EditTextPreference
+    android:title="@string/gasTickSoundInterval"
+    android:key="@string/pref_gasTickSoundInterval"
+    android:numeric="integer"
+    android:defaultValue="@string/gasTickSoundIntervalDefault"
+    android:summary="@string/gasTickSoundIntervalSummary"/>
+    
+    <EditTextPreference
+    android:title="@string/gasGallonConsumedSoundInterval"
+    android:key="@string/pref_gasGallonConsumedSoundInterval"
+    android:numeric="integer"
+    android:defaultValue="@string/gasGallonConsumedSoundIntervalDefault"
+    android:summary="@string/gasGallonConsumedSoundIntervalSummary"/>
+    
+    <EditTextPreference
+    android:title="@string/gasGallonCost"
+    android:key="@string/pref_gasGallonCost"
+    android:numeric="integer"
+    android:defaultValue="@string/gasGallonCostDefault"
+    android:summary="@string/gasGallonCostSummary"/>
+    
      <CheckBoxPreference
     android:title="@string/HeadlightSound"
     android:key="pref_HeadlightSound"
@@ -97,6 +118,14 @@
     android:key="pref_wipersSound"
     android:defaultValue="@string/wipersSoundDefault"
     android:summary="@string/wipersSoundSummary"/>
+    
+    <CheckBoxPreference
+    android:title="@string/rapidDecelerationSound"
+    android:key="pref_rapidDecelerationSound"
+    android:defaultValue="@string/rapidDecelerationSoundDefault"
+    android:summary="@string/rapidDecelerationSoundSummary"/>
+    
+    
     </PreferenceCategory>
     
     <PreferenceCategory

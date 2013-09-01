@@ -23,6 +23,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -76,10 +78,13 @@ import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
  
-public class MainActivity extends IOIOActivity {
+public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitListener  {
 	
 	private VehicleManager mVehicleManager;
 	private TextView mVehicleSpeedView;
@@ -100,6 +105,7 @@ public class MainActivity extends IOIOActivity {
 	private TextView proxSensorView;
 	private TextView button1View;
 	private TextView button2View;
+	private TextView tripCostView;
 	//buttonOne
 
 	
@@ -111,7 +117,7 @@ public class MainActivity extends IOIOActivity {
 
   	private ioio.lib.api.RgbLedMatrix.Matrix KIND;  //have to do it this way because there is a matrix library conflict
 	private android.graphics.Matrix matrix2;
-    private static final String LOG_TAG = "pixelphoto";	
+    private static final String LOG_TAG = "pixelopenxc";	
     private short[] frame_ = new short[512];
   	public static final Bitmap.Config FAST_BITMAP_CONFIG = Bitmap.Config.RGB_565;
   	private byte[] BitmapBytes;
@@ -185,10 +191,17 @@ public class MainActivity extends IOIOActivity {
     private int i = 0;
     private int z = 0;
     private int v = 0;
+    private int g = 0; //for the gas consumed piece
+    private int g2 = 0;
+    
+    private float _gasGallonCost;
     
     private int rapidBrakeInterval = 1;
     private int rapidBrakeRate = 2;
     private int rapidBrakeDisplayTime = 3;
+    
+    private float _gasTickSoundInterval;
+    private int _gasGallonConsumedSoundInterval;
     
     private Timer _pedalTimer;
     private Timer _birdTimer;
@@ -199,9 +212,15 @@ public class MainActivity extends IOIOActivity {
     private float proxValue;
   
   //  private double[] speedArray;
+    private double speed;
     private double currentSpeed;
     private double previousSpeed;
     private double speedDelta;
+    private double TripBaselineGas;
+    private double TripGasConsumed;
+    
+    private double TripBaselineGas2;
+    private double TripGasConsumed2;
     
     private Button _thanksButton;
     private Button _fuButton;
@@ -242,6 +261,7 @@ public class MainActivity extends IOIOActivity {
     final static int POWERUP = 25;
     final static int POWERUP2 = 26;
     final static int RAYGUN = 27;
+    final static int ALERT = 27;
     
     private float  streamVolume;
     
@@ -257,6 +277,7 @@ public class MainActivity extends IOIOActivity {
     private boolean _highSpeedAlarmSound;
     private boolean _ignitionSound;
     private boolean _wipersSound;
+    private boolean _rapidDecelerationSound;
     
     private boolean _enablePedal;
     private boolean _enableIOIOButtons;
@@ -268,6 +289,9 @@ public class MainActivity extends IOIOActivity {
     private int _rapidBrakeInterval;
     private int _rapidBrakeRate;
     private int _rapidBrakeDisplayTime;
+    
+    private TextToSpeech tts;
+    private static final int MY_DATA_CHECK_CODE = 1234;
     
     
     @Override
@@ -332,10 +356,11 @@ public class MainActivity extends IOIOActivity {
 		 _thanksButton = (Button) findViewById(R.id.thanks_button);
 		 _fuButton = (Button) findViewById(R.id.fu_button);
 		 _tongueButton = (Button) findViewById(R.id.tongue_button);
+		 
+		 tripCostView = (TextView) findViewById(R.id.tripCost);
 		
 		Intent intent = new Intent(this, VehicleManager.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);  
-        
         
         mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
         mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -374,15 +399,15 @@ public class MainActivity extends IOIOActivity {
         mSoundPoolMap.put(POWERUP, mSoundPool.load(this, R.raw.powerup, 1));
         mSoundPoolMap.put(POWERUP2, mSoundPool.load(this, R.raw.powerup2, 1));
         mSoundPoolMap.put(RAYGUN, mSoundPool.load(this, R.raw.raygun, 1));
-        
-     
-       
-        
-        
+        mSoundPoolMap.put(ALERT, mSoundPool.load(this, R.raw.alert, 1));
         
         
     	streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         streamVolume = streamVolume / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
       
        // mStream2= mSoundPool.play(mSoundPoolMap.get(JETSONS_RUNNING), streamVolume, streamVolume, 1, LOOP_3_TIMES, 1f);
         
@@ -935,33 +960,87 @@ final Runnable TongueRunnable = new Runnable() {
    	
       return true;
    }
+   
+	//now let's get data back from the preferences activity below
+   @Override
+   public void onActivityResult(int reqCode, int resCode, Intent data) //we'll go into a reset after this
+   {
+   	super.onActivityResult(reqCode, resCode, data);
+   	
+   	// if (debug == true) {
+   	//	 Toast.makeText(getBaseContext(), "On Activity Result Code: " + reqCode, Toast.LENGTH_LONG).show();
+       // }      	
+   	
+   	setPreferences(); //very important to have this here, after the menu comes back this is called, we'll want to apply the new prefs without having to re-start the app
+   	
+   	
+   	if (reqCode == MY_DATA_CHECK_CODE)
+       {
+           if (resCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS)
+           {
+               // TTS installed, create instance
+               tts = new TextToSpeech(this, (OnInitListener) this);
+               Context context = getApplicationContext();
+               
+               if (debug_ == true) {
+	                CharSequence text = "Text to Speech Engine is installed";
+	                int duration = Toast.LENGTH_SHORT;
+	                Toast toast = Toast.makeText(context, text, duration);
+	                toast.show();
+               }                
+           }
+           else
+           {
+               // TTS not installed, install it
+
+               Context context = getApplicationContext();
+              
+               CharSequence text = "The Android Text to Speech Engine is NOT installed, you will now be prompted to install it";
+               int duration = Toast.LENGTH_LONG;
+               Toast toast = Toast.makeText(context, text, duration);
+               toast.show();
+
+               Intent installIntent = new Intent();
+               installIntent.setAction(
+                       TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+               startActivity(installIntent);
+           }
+       }
+   	
+       	
+   	//String extraData=data.getStringExtra("ComingFrom");
+   	//debug_.setText(extraData);    	
+   	
+   	
+   }
    	
    
    private void setPreferences() //here is where we read the shared preferences into variables
    {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);     
 
-    noSleep = prefs.getBoolean("pref_noSleep", false);     
+    noSleep = prefs.getBoolean("pref_noSleep", true);     
     debug_ = prefs.getBoolean("pref_debugMode", false);
     
     _pedalSound = prefs.getBoolean("pref_pedalSound", false);
     _msgSound = prefs.getBoolean("pref_msgSound", false);
     _gearSound = prefs.getBoolean("pref_gearSound", false);
-    _gasConsumedSound = prefs.getBoolean("pref_gasConsumedSound", false);
+    _gasConsumedSound = prefs.getBoolean("pref_gasConsumedSound", true);
     _HeadlightSound = prefs.getBoolean("pref_HeadlightSound", false);
     _highBeamSound = prefs.getBoolean("pref_highBeamSound", false);
     _highSpeedAlarmSound = prefs.getBoolean("pref_highSpeedAlarmSound", false);
     _ignitionSound = prefs.getBoolean("pref_ignitionSound", false);
     _wipersSound = prefs.getBoolean("pref_wipersSound", false);
+    _rapidDecelerationSound = prefs.getBoolean("pref_rapidDecelerationSound", true);
     
-    _enablePedal = prefs.getBoolean("pref_enablePedal", false);
+    _enablePedal = prefs.getBoolean("pref_enablePedal", true);
     _enableIOIOButtons = prefs.getBoolean("pref_enableIOIOButtons", false);
-    _enablePIXEL = prefs.getBoolean("pref_enablePIXEL", false);
+    _enablePIXEL = prefs.getBoolean("pref_enablePIXEL", true);
     
     _highSpeedSMS = prefs.getBoolean("pref_highSpeedSMS", false);
     
     _highSpeedSMSThreshold = Integer.valueOf(prefs.getString(   
-   	        resources.getString(R.string.pref_speedLimitThreshold),
+   	        resources.getString(R.string.pref_highSpeedSMSThreshold),
    	        resources.getString(R.string.highSpeedSMSThresholdDefault))); 
     
     _rapidBrakeInterval = Integer.valueOf(prefs.getString(   
@@ -979,6 +1058,20 @@ final Runnable TongueRunnable = new Runnable() {
      matrix_model = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
    	        resources.getString(R.string.selected_matrix),
    	        resources.getString(R.string.matrix_default_value))); 
+     
+     _gasTickSoundInterval = Float.valueOf(prefs.getString(  
+    	        resources.getString(R.string.pref_gasTickSoundInterval),
+    	        resources.getString(R.string.gasTickSoundIntervalDefault))); 
+     
+     _gasGallonConsumedSoundInterval = Integer.valueOf(prefs.getString(   
+    	        resources.getString(R.string.pref_gasGallonConsumedSoundInterval),
+    	        resources.getString(R.string.gasGallonConsumedSoundIntervalDefault))); 
+     
+     _gasGallonCost = Float.valueOf(prefs.getString(   
+ 	        resources.getString(R.string.pref_gasGallonCost),
+ 	        resources.getString(R.string.gasGallonCostDefault))); 
+     
+     
     
     
     switch (matrix_model) {  //the user can use other LED displays other than PIXEL's by choosing from preferences
@@ -1141,9 +1234,12 @@ final Runnable TongueRunnable = new Runnable() {
  			
  			pixelFound = 1; //if we went here, then we are connected over bluetooth or USB
  			
- 			prox_ = ioio_.openAnalogInput(proxPinNumber);
- 			button1_ = ioio_.openDigitalInput(3);
- 			button2_ = ioio_.openDigitalInput(5);
+ 			//prox_ = ioio_.openAnalogInput(proxPinNumber);
+ 			
+ 			if (_enableIOIOButtons == true) {
+	 			button1_ = ioio_.openDigitalInput(3);
+	 			button2_ = ioio_.openDigitalInput(5);
+ 			}
  			
  		//	try {
 				//button1_.waitForValue(true);
@@ -1195,26 +1291,30 @@ final Runnable TongueRunnable = new Runnable() {
 						  // 	 matrix_.frame(frame_);  
 					//	 }
 						
-		 				boolean button1State = button1_.read(); //let's read the buttons
-		 				boolean button2State = button2_.read();
 		 				
-						if (button1State == true) { //the button was pressed so let's show an image for a set amount of time
-							  
-							playThanksAnimation();
-							
-						}
-						 else {
-							 showButton1("off");	 
-						 }
+						if (_enableIOIOButtons == true) {
 						
-						if (button2State == true) { //the button was pressed so let's show an image for a set amount of time
-							
-							playFUAnimation();
-							
+							boolean button1State = button1_.read(); //let's read the buttons
+			 				boolean button2State = button2_.read();
+			 				
+							if (button1State == true) { //the button was pressed so let's show an image for a set amount of time
+								  
+								playThanksAnimation();
+								
 							}
-						 else {
-							 showButton2("off");	 
-						 }
+							 else {
+								 showButton1("off");	 
+							 }
+							
+							if (button2State == true) { //the button was pressed so let's show an image for a set amount of time
+								
+								playFUAnimation();
+								
+								}
+							 else {
+								 showButton2("off");	 
+							 }
+						}
 						 
 						//	button1View = (TextView) findViewById(R.id.buttonOne);
 						//	button2View = (TextView) findViewById(R.id.buttonTwo);
@@ -1323,8 +1423,8 @@ final Runnable TongueRunnable = new Runnable() {
    
 	public void onPause() {
 	    super.onPause();
-	    Log.i("openxc", "Unbinding from vehicle service");
-	    unbindService(mConnection);
+	  //  Log.i("openxc", "Unbinding from vehicle service");
+	  //  unbindService(mConnection);
 	}
 	
 	    
@@ -1509,16 +1609,16 @@ final Runnable TongueRunnable = new Runnable() {
 	//			e.printStackTrace();
 	//		}
 	        
-	    if (_gearSound == true) {
-		        try {
-					mVehicleManager.addListener(TransmissionGearPosition.class, mGearListener);
-				} catch (VehicleServiceException e) {
-					e.printStackTrace();
-				} catch (UnrecognizedMeasurementTypeException e) {
-					e.printStackTrace();
-				}
-	        }
-	    }
+	  
+	        try {
+				mVehicleManager.addListener(TransmissionGearPosition.class, mGearListener);
+			} catch (VehicleServiceException e) {
+				e.printStackTrace();
+			} catch (UnrecognizedMeasurementTypeException e) {
+				e.printStackTrace();
+			}
+        }
+	   
  
 	    // Called when the connection with the service disconnects unexpectedly
 	    public void onServiceDisconnected(ComponentName className) {
@@ -1543,18 +1643,30 @@ final Runnable TongueRunnable = new Runnable() {
 	    	final VehicleSpeed _speed = (VehicleSpeed) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
-	                mVehicleSpeedView.setText(
-	                    "Vehicle speed (km/h): " + _speed.getValue().doubleValue());
+	            	speed = _speed.getValue().doubleValue() * 0.621371; //we need to convert km/h to mp/h
+	            	String speedString = String.format("%.1f", speed);	
+	               //mVehicleSpeedView.setText(
+	                   // "Vehicle speed (mp/h): " + _speed.getValue().doubleValue());
+	            	 mVehicleSpeedView.setText(
+	                    "Vehicle speed (mp/h): " + speedString);
+	            	 
+	            	 
+	            	if (_highSpeedAlarmSound == true) { //play a sound if user going too fast
+		            	 if (speed > _highSpeedSMSThreshold) {
+		            		mSoundPool.stop(mStream1);
+	    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(ALERT), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            	 }
+	            	}
 	                
 	                if (v == 0) { //what we'll do here is take two snapshots reading, one reading a second ago and then other the current time, then compare these to see if we have a rapid deceleration event
-	                	previousSpeed = _speed.getValue().doubleValue();
+	                	previousSpeed = _speed.getValue().doubleValue() * 0.621371;
 	                	 v++;
 	                	// Log.w("openxc", "last speed " + v + ": " + previousSpeed);
 	                }
 	                else {
 	                	
 	                	if (v == _rapidBrakeInterval * 4) {  //if we are checking the speed for a rapid deceleation event every second for example, then this will be 1 * 4 , 4 because the ford rate api for speed is 4 Hz or 4 measurements per second
-	                		currentSpeed = _speed.getValue().doubleValue();
+	                		currentSpeed = _speed.getValue().doubleValue() * 0.621371;
 	                		v = 0;
 	                	}
 	                	else {
@@ -1599,6 +1711,13 @@ final Runnable TongueRunnable = new Runnable() {
 									e.printStackTrace();
 								}
 		            			i = 0;
+		            			
+		            			
+		            			if (_rapidDecelerationSound == true) {
+		            				mSoundPool.stop(mStream1);
+	            	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(DANGER), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            			}
+		            			
 		            			//now let's start the timer as we'll want to display this image for x seconds and then clear the flags so other stuff can play again
 		            			_rapidBrakeTimer = new Timer();
 		            			_rapidBrakeTimer.schedule(new TimerTask() {
@@ -1921,8 +2040,56 @@ final Runnable TongueRunnable = new Runnable() {
 	    	final FuelConsumed _fullConsumed = (FuelConsumed) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
+	            	
+	            	double gasConsumed = _fullConsumed.getValue().doubleValue();
+	            	double gasCost = gasConsumed * _gasGallonCost;
+	            	String gasCostString = String.format("%.2f", gasCost);
+	            	String gasConsumedString = String.format("%.2f", gasCost);
+	            	
 	            	mVehicleFuelConsumedView.setText(
-	            	 	"Fuel Consumed Since Start: " + _fullConsumed.getValue().doubleValue());
+		            	 	"Fuel Consumed Since Start: " + gasConsumedString);
+	           
+	            	tripCostView.setText("Trip Cost: $" + gasCostString);
+	            	
+	            	if (_gasConsumedSound == true) {	
+	            	
+			            	if (g == 0) {
+			            			TripBaselineGas = _fullConsumed.getValue().doubleValue();
+			            		}
+			            		
+			            		if (g2 == 0) {
+			            			TripBaselineGas2 = _fullConsumed.getValue().doubleValue();  //for the one gallon mark
+			            		}
+			            		
+			            		TripGasConsumed = _fullConsumed.getValue().doubleValue();
+			            		TripGasConsumed2 = _fullConsumed.getValue().doubleValue();
+			            		
+			            		g++;
+			            		g2++;
+			            		
+			            		if (TripGasConsumed -TripBaselineGas > _gasTickSoundInterval ) {  //then we've used 1/10 a gallon of gas
+			            			mSoundPool.stop(mStream1);
+		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(GAS_DROP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		        	    	   		g = 0;
+		        	    	   		
+		        	    	   		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		        	    	    	tts.speak("you've just used some gas", TextToSpeech.QUEUE_FLUSH, null);    	
+			            		}
+			            		
+			            		if (TripGasConsumed2 -TripBaselineGas2 > _gasGallonConsumedSoundInterval ) {  //then we've used 1/10 a gallon of gas
+			            			mSoundPool.stop(mStream1);
+		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(BUBBLES), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		        	    	   		g2 = 0;
+			            		}
+			            			
+			            		//gasTickSoundInterval
+	            		
+	            	}
+	            		
+	            	
+	            	// private double TripBaselineGas;
+	            	 //   private double TripGasConsumed;
+	            	
 	            }
 	        });
 	    }
@@ -1988,14 +2155,21 @@ final Runnable TongueRunnable = new Runnable() {
 	            	mVehicleGearView.setText(
 	            	 	"Gear: " + _gear.getValue());
 	            	
-	            	mSoundPool.stop(mStream1);
-	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
-	    	   	
-	            	
+	            	if (_gearSound == true) {
+		            	mSoundPool.stop(mStream1);
+		    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+	            	}
 	            	
 	           }
 	        });
 	    }
 	};
+
+
+	@Override
+	public void onInit(int status) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

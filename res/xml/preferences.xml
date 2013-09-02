@@ -39,6 +39,13 @@
     android:defaultValue="@string/highSpeedSMSDefault"
     android:summary="@string/highSpeedSMSSummary"/>
     
+     <EditTextPreference
+    android:title="@string/highSpeedSMSTextNumber"
+    android:key="@string/pref_highSpeedSMSTextNumber"
+    android:numeric="integer"
+    android:defaultValue="@string/highSpeedSMSTextNumberDefault"
+    android:summary="@string/highSpeedSMSTextNumberSummary"/>
+    
   
     
     <PreferenceCategory
@@ -106,6 +113,8 @@
     android:key="pref_highSpeedAlarmSound"
     android:defaultValue="@string/highSpeedAlarmSoundDefault"
     android:summary="@string/highSpeedAlarmSoundSummary"/>
+    
+   
     
     <CheckBoxPreference
     android:title="@string/ignitionSound"

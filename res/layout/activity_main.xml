@@ -8,178 +8,216 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-           <TextView
-               android:id="@+id/fuel_level"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/gear"
-               android:layout_below="@+id/pedal_position"
-               android:text="*** Fuel Level - No Data ***" />
+    <TextView
+        android:id="@+id/pedal_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/vehicle_speed"
+        android:layout_below="@+id/vehicle_speed"
+        android:text="* Pedal Position *" />
 
-           <TextView
-               android:id="@+id/pedal_position"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/vehicle_speed"
-               android:layout_below="@+id/vehicle_speed"
-               android:text="*** Pedal Position - No Data ***" />
+    <TextView
+        android:id="@+id/steering_wheel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/vehicle_speed"
+        android:layout_below="@+id/brake_status"
+        android:text="" />
 
-           <TextView
-               android:id="@+id/steering_wheel"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/vehicle_speed"
-               android:layout_below="@+id/brake_status"
-               android:text="" />
+    <TextView
+        android:id="@+id/buttonOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/turn_signal"
+        android:layout_below="@+id/proxSensor"
+        android:text="* IOIO B1 *" />
 
-           <TextView
-               android:id="@+id/vehicle_speed"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/brake_status"
-               android:layout_alignTop="@+id/steering_wheel"
-               android:text="*** Speed - No Data ***" />
+    <TextView
+        android:id="@+id/gear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tongue_button"
+        android:layout_below="@+id/buttonTwo"
+        android:text="* Gear *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-           <TextView
-               android:id="@+id/gear"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/steering_wheel"
-               android:layout_below="@+id/fuel_level"
-               android:text="*** Current Gear - No Data ***" />
+    <TextView
+        android:id="@+id/proxSensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/buttonOne"
+        android:layout_below="@+id/turn_signal"
+        android:text="* Prox Sensor *" />
 
-           <TextView
-               android:id="@+id/fuel_consumed"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/gear"
-               android:layout_below="@+id/gear"
-               android:text="*** Fuel Consumed - No Data ***" />
+    <Button
+        android:id="@+id/tongue_button"
+        style="@style/ButtonText"
+        android:layout_alignLeft="@+id/button_status"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="123dp"
+        android:background="@drawable/orangebutton"
+        android:text="Tongue" />
 
-           <TextView
-               android:id="@+id/door"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/fuel_consumed"
-               android:layout_below="@+id/fuel_consumed"
-               android:text="*** Door Open or Not - No Data ***" />
+    <Button
+        android:id="@+id/thanks_button"
+        style="@style/ButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tongue_button"
+        android:layout_alignLeft="@+id/tongue_button"
+        android:layout_alignRight="@+id/tongue_button"
+        android:layout_marginBottom="94dp"
+        android:background="@drawable/greenbutton"
+        android:text="Thanks" />
 
-           <TextView
-               android:id="@+id/odometer"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/door"
-               android:layout_below="@+id/door"
-               android:text="*** Odometer - No Data ***" />
+    <Button
+        android:id="@+id/fu_button"
+        style="@style/ButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/thanks_button"
+        android:layout_alignLeft="@+id/thanks_button"
+        android:layout_alignRight="@+id/thanks_button"
+        android:background="@drawable/redbutton"
+        android:text="F Bomb" />
 
-           <TextView
-               android:id="@+id/wipers"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/odometer"
-               android:layout_below="@+id/odometer"
-               android:text="*** Wipers - No Data ***" />
+    <Button
+        android:id="@+id/tripCostButton"
+        style="@style/ButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fu_button"
+        android:layout_alignLeft="@+id/fu_button"
+        android:layout_alignRight="@+id/thanks_button"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/yellowbutton"
+        android:text="Trip Cost" />
 
-           <TextView
-               android:id="@+id/highbeams"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/wipers"
-               android:layout_below="@+id/wipers"
-               android:text="*** Highbeams - No Data ***" />
+    <TextView
+        android:id="@+id/wipers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/thanks_button"
+        android:layout_below="@+id/gear"
+        android:text="* Wipers *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-           <TextView
-               android:id="@+id/lights"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignLeft="@+id/turn_signal"
-               android:layout_below="@+id/highbeams"
-               android:text="*** Head Lamp - No Data ***" />
+    <TextView
+        android:id="@+id/button_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wipers"
+        android:text="* Wheel Button *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-           <TextView
-               android:id="@+id/turn_signal"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignParentLeft="true"
-               android:layout_below="@+id/lights"
-               android:layout_marginLeft="30dp"
-               android:text="*** Turn Signal - No Data ***" />
+    <TextView
+        android:id="@+id/tripCost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/fuel_consumed"
+        android:text="* Trip Cost *"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#872657" />
 
-           <TextView
-               android:id="@+id/brake_status"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_alignParentLeft="true"
-               android:layout_alignParentTop="true"
-               android:layout_marginLeft="18dp"
-               android:layout_marginTop="34dp"
-               android:text="*** Brake - No Data ***" />
+    <TextView
+        android:id="@+id/lights"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_status"
+        android:text="* Headlights *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-              <TextView
-                  android:id="@+id/button_status"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignRight="@+id/highbeams"
-                  android:layout_below="@+id/turn_signal"
-                  android:text="*** Button Status - No Data ***" />
+    <TextView
+        android:id="@+id/vehicle_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lights"
+        android:layout_alignTop="@+id/steering_wheel"
+        android:text="* Speed *" />
 
-              <TextView
-                  android:id="@+id/proxSensor"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignRight="@+id/lights"
-                  android:layout_below="@+id/button_status"
-                  android:text="*** Prox Sensor - No Data ***" />
+    <TextView
+        android:id="@+id/turn_signal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/steering_wheel"
+        android:layout_below="@+id/pedal_position"
+        android:text="* Turn Signal *" />
 
-              <TextView
-                  android:id="@+id/buttonOne"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@+id/turn_signal"
-                  android:layout_below="@+id/proxSensor"
-                  android:text="*** Button One - No Data ***" />
+    <TextView
+        android:id="@+id/brake_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/gear"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:text="* Brake *" />
 
-              <TextView
-                  android:id="@+id/buttonTwo"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@+id/buttonOne"
-                  android:layout_below="@+id/buttonOne"
-                  android:text="*** Button Two - No Data ***" />
+    <TextView
+        android:id="@+id/fuel_consumed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tongue_button"
+        android:layout_below="@+id/brake_status"
+        android:layout_marginRight="31dp"
+        android:text="* Fuel Consumed *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-              <Button
-                  android:id="@+id/tongue_button"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@+id/highbeams"
-                  android:layout_below="@+id/buttonTwo"
-                  android:layout_marginTop="16dp"
-                  android:text="Tongue" />
+    <TextView
+        android:id="@+id/fuel_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/door"
+        android:layout_below="@+id/pedal_position"
+        android:text="* Fuel Level *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-              <Button
-                  android:id="@+id/thanks_button"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@+id/tongue_button"
-                  android:layout_below="@+id/fu_button"
-                  android:text="Thanks" />
+    <TextView
+        android:id="@+id/door"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonTwo"
+        android:layout_alignRight="@+id/buttonTwo"
+        android:layout_marginRight="43dp"
+        android:text="* Door *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-              <Button
-                  android:id="@+id/fu_button"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@+id/thanks_button"
-                  android:layout_below="@+id/tongue_button"
-                  android:text="FU" />
+    <TextView
+        android:id="@+id/buttonTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/buttonOne"
+        android:layout_alignBottom="@+id/buttonOne"
+        android:layout_marginLeft="65dp"
+        android:layout_toRightOf="@+id/pedal_position"
+        android:text="* IOIO B2 *" />
 
-              <TextView
-                  android:id="@+id/tripCost"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignTop="@+id/brake_status"
-                  android:layout_toRightOf="@+id/door"
-                  android:text="*** Trip Cost ***"
-                  android:textAppearance="?android:attr/textAppearanceLarge" />
+    <TextView
+        android:id="@+id/ignitionStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wipers"
+        android:layout_alignLeft="@+id/door"
+        android:text="* Ignition *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/highbeams"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_status"
+        android:layout_alignLeft="@+id/ignitionStatus"
+        android:text="* High Beams *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/odometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/wipers"
+        android:layout_below="@+id/lights"
+        android:text="* Odometer *"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
          android:layout_marginTop="86dp" />
 

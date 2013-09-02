@@ -64,7 +64,7 @@
     <string name="gasConsumedSoundSummary"></string>
     
     <string name="gasGallonCost">Gas Cost per Gallon</string>    
-    <string name="pref_gasGallonCost">gasGallonCost</string>
+    <string name="pref_gasGallonCost">pref_gasGallonCost</string>
     <string name="gasGallonCostDefault">3.40</string>    
     <string name="gasGallonCostSummary"></string>
     
@@ -82,6 +82,11 @@
     <string name="pref_highSpeedAlarmSound">pref_highSpeedAlarmSound</string>
     <string name="highSpeedAlarmSoundDefault">true</string>    
     <string name="highSpeedAlarmSoundSummary"></string>
+    
+    <string name="highSpeedSMSTextNumber">Phone Number</string>    
+    <string name="pref_highSpeedSMSTextNumber">pref_highSpeedSMSTextNumber</string>
+    <string name="highSpeedSMSTextNumberDefault">4088921718</string>    
+    <string name="highSpeedSMSTextNumberSummary"></string>
    
     <string name="ignitionSound">Ignition</string>    
     <string name="pref_ignitionSound">pref_ignitionSound</string>
@@ -98,8 +103,8 @@
     <string name="enablePedalDefault">true</string>    
     <string name="enablePedalSummary"></string>
     
-      <string name="rapidDecelerationSound">Pedal Indicator</string>    
-    <string name="pref_rapidDecelerationSound">pref_enablePedal</string>
+      <string name="rapidDecelerationSound">Rapid Deceleration</string>    
+    <string name="pref_rapidDecelerationSound">pref_rapidDecelerationSound</string>
     <string name="rapidDecelerationSoundDefault">true</string>    
     <string name="rapidDecelerationSoundSummary">Danger Will Robinson soundbyte</string>
     
@@ -148,5 +153,20 @@
    <string name="rapidBrakeDisplayTimeDefault">3</string>
    <string name="rapidBrakeDisplayTimeSummary">How many seconds to display the rapid deceleration indicator image on PIXEL</string>
           
-
+   <style name="ButtonText">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textColor">#ffffff</item>
+    <item name="android:gravity">center</item>
+    <item name="android:layout_margin">3dp</item>
+    <item name="android:textSize">30dp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:shadowColor">#000000</item>
+    <item name="android:shadowDx">1</item>
+    <item name="android:shadowDy">1</item>
+    <item name="android:shadowRadius">2</item>
+</style>
+   
+   
+   
 </resources>

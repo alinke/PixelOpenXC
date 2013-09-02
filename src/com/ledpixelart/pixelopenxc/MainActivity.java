@@ -44,6 +44,8 @@ import alt.android.os.CountDownTimer;
 
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
+
+import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleButtonEvent;
 import com.openxc.measurements.VehicleSpeed;
@@ -62,6 +64,7 @@ import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.remote.VehicleServiceException;
 import com.openxc.units.Boolean;
 import com.openxc.units.Percentage;
+import com.openxc.units.State;
 import com.openxc.util.Range;
 
 import ioio.lib.api.AnalogInput;
@@ -76,6 +79,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -83,6 +87,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.telephony.SmsManager;
  
 public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitListener  {
 	
@@ -106,6 +111,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private TextView button1View;
 	private TextView button2View;
 	private TextView tripCostView;
+	private TextView ignitionStatusView;
 	//buttonOne
 
 	
@@ -121,6 +127,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private short[] frame_ = new short[512];
   	public static final Bitmap.Config FAST_BITMAP_CONFIG = Bitmap.Config.RGB_565;
   	private byte[] BitmapBytes;
+  	private int [] gearArray2;
   	private InputStream BitmapInputStream;
   	private Bitmap canvasBitmap;
   	private int width_original;
@@ -193,6 +200,11 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private int v = 0;
     private int g = 0; //for the gas consumed piece
     private int g2 = 0;
+    private int p = 0; //used for gear
+    private int lastGear = 0;
+    private int currentGear = 0;
+    
+    private int[] gearArray = new int[1000];
     
     private float _gasGallonCost;
     
@@ -208,6 +220,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private Timer _thxTimer;
     private Timer _rapidBrakeTimer;
     private Timer _tongueTimer;
+    private Timer _highSpeedTimer;
     
     private float proxValue;
   
@@ -225,6 +238,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private Button _thanksButton;
     private Button _fuButton;
     private Button _tongueButton;
+    private Button _tripCostButton;
     
     private SoundPool mSoundPool;
     private AudioManager  mAudioManager;
@@ -293,6 +307,16 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private TextToSpeech tts;
     private static final int MY_DATA_CHECK_CODE = 1234;
     
+    private String gasCostString = null;
+	private String gasConsumedString = null;
+	private boolean highSpeedRunningFlag = false;
+	
+	private SmsManager sms = SmsManager.getDefault();
+	private String _highSpeedSMSTextNumber;
+	private String gearString;
+	private String ignitionString;
+	private double odometerValue;
+    
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -356,8 +380,10 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 		 _thanksButton = (Button) findViewById(R.id.thanks_button);
 		 _fuButton = (Button) findViewById(R.id.fu_button);
 		 _tongueButton = (Button) findViewById(R.id.tongue_button);
+		 _tripCostButton = (Button) findViewById(R.id.tripCostButton);
 		 
 		 tripCostView = (TextView) findViewById(R.id.tripCost);
+		 ignitionStatusView = (TextView) findViewById(R.id.ignitionStatus);
 		
 		Intent intent = new Intent(this, VehicleManager.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);  
@@ -433,6 +459,15 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
         });
         
+        _tripCostButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				speakTripCost();
+			}
+        });
+        
+        
+        
         
         
 	}
@@ -441,7 +476,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     	 if (thanksPriority >= currentPriority && pixelFound == 1 && button1TimerRunning == 0 ) {						
 			 currentPriority = thanksPriority; 
 			 button1TimerRunning = 1; 
-			 showButton1("on");	
+			// showButton1("on");	
 		   	  
 		   	if (pedalTimerRunning == 1) { //now let's check if the timer is running and start it if not
     			_pedalTimer.cancel();
@@ -461,8 +496,10 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
 			
 			if (buttonSounds == true) {
-		 		mSoundPool.stop(mStream1);
-		 		mStream1 = mSoundPool.play(mSoundPoolMap.get(THANKS), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		 		//mSoundPool.stop(mStream1);
+		 		//mStream1 = mSoundPool.play(mSoundPoolMap.get(THANKS), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		 		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		    	tts.speak("You just said thanks", TextToSpeech.QUEUE_FLUSH, null);  
 		 	}
 		   
 		   	i = 0;
@@ -478,7 +515,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private void playFUAnimation() {
     	 if (fuPriority >= currentPriority && pixelFound == 1 && button2TimerRunning == 0 ) {	
 			  
-    		 showButton2("on");
+    		// showButton2("on");
 			  currentPriority = fuPriority; 
 			  button2TimerRunning = 1;
 		   	  
@@ -500,8 +537,10 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
 			
 		 	if (buttonSounds == true) {
-		 		mSoundPool.stop(mStream1);
-		 		mStream1 = mSoundPool.play(mSoundPoolMap.get(BIRD), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		 		//mSoundPool.stop(mStream1);
+		 		//mStream1 = mSoundPool.play(mSoundPoolMap.get(BIRD), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		 		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		    	tts.speak("You just gave that asshole the bird", TextToSpeech.QUEUE_FLUSH, null);  
 		 	}
 			
 			 i = 0; 
@@ -535,8 +574,10 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
 			
 			if (buttonSounds == true) {
-		 		mSoundPool.stop(mStream1);
-		 		mStream1 = mSoundPool.play(mSoundPoolMap.get(TONGUE), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		 		//mSoundPool.stop(mStream1);
+		 		//mStream1 = mSoundPool.play(mSoundPoolMap.get(TONGUE), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		 		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		    	tts.speak("You're sticking out your tongue", TextToSpeech.QUEUE_FLUSH, null);  
 		 	}
 			
 		   	i = 0;
@@ -1043,6 +1084,10 @@ final Runnable TongueRunnable = new Runnable() {
    	        resources.getString(R.string.pref_highSpeedSMSThreshold),
    	        resources.getString(R.string.highSpeedSMSThresholdDefault))); 
     
+    _highSpeedSMSTextNumber = prefs.getString(   
+   	        resources.getString(R.string.pref_highSpeedSMSTextNumber),
+   	        resources.getString(R.string.highSpeedSMSTextNumberDefault));
+    
     _rapidBrakeInterval = Integer.valueOf(prefs.getString(   
    	        resources.getString(R.string.pref_rapidBrakeInterval),
    	        resources.getString(R.string.rapidBrakeIntervalDefault))); 
@@ -1478,6 +1523,14 @@ final Runnable TongueRunnable = new Runnable() {
 			} catch (UnrecognizedMeasurementTypeException e) {
 				e.printStackTrace();
 			}
+	       
+	       try {
+				mVehicleManager.addListener(IgnitionStatus.class, mIgnitionListener);
+			} catch (VehicleServiceException e) {
+				e.printStackTrace();
+			} catch (UnrecognizedMeasurementTypeException e) {
+				e.printStackTrace();
+			}
 	        
 	 //       try {
 	//			mVehicleManager.addListener(SteeringWheelAngle.class, mSteeringWheelListener);
@@ -1593,13 +1646,13 @@ final Runnable TongueRunnable = new Runnable() {
 				}
 	        }
 	        
-	    //    try {
-	//			mVehicleManager.addListener(Odometer.class, mOdometerListener);
-	//		} catch (VehicleServiceException e) {
-	//			e.printStackTrace();
-	//		} catch (UnrecognizedMeasurementTypeException e) {
-	//			e.printStackTrace();
-	//		}
+	        try {
+				mVehicleManager.addListener(Odometer.class, mOdometerListener);
+			} catch (VehicleServiceException e) {
+				e.printStackTrace();
+			} catch (UnrecognizedMeasurementTypeException e) {
+				e.printStackTrace();
+			}
 	        
 	//        try {
 		//		mVehicleManager.addListener(VehicleDoorStatus.class, mVehicleDoorListener);
@@ -1627,17 +1680,8 @@ final Runnable TongueRunnable = new Runnable() {
 	    }
 	};
  
-	
- 
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-	//	getMenuInflater().inflate(R.menu.main, menu);
-	//	return true;
-//	}
-	
 
- 
+	
 	VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
 	    public void receive(Measurement measurement) {
 	    	final VehicleSpeed _speed = (VehicleSpeed) measurement;
@@ -1648,13 +1692,25 @@ final Runnable TongueRunnable = new Runnable() {
 	               //mVehicleSpeedView.setText(
 	                   // "Vehicle speed (mp/h): " + _speed.getValue().doubleValue());
 	            	 mVehicleSpeedView.setText(
-	                    "Vehicle speed (mp/h): " + speedString);
+	                    "Speed (mp/h): " + speedString);
 	            	 
 	            	 
 	            	if (_highSpeedAlarmSound == true) { //play a sound if user going too fast
-		            	 if (speed > _highSpeedSMSThreshold) {
-		            		mSoundPool.stop(mStream1);
-	    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(ALERT), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            	 
+	            		if (speed > _highSpeedSMSThreshold) {
+		            		 
+		            		 if (highSpeedRunningFlag == false) {
+		            			 i = 0;
+		            			 highSpeedRunningFlag = true;
+		            			 	
+		            			 
+		            			 	_highSpeedTimer = new Timer();
+		            		 		_highSpeedTimer.schedule(new TimerTask() {
+		       		                @Override
+		       		                public void run() {UpdateHighSpeed();}
+		       		          		}, 0, 2000); 
+		            		 }
+		            		
 		            	 }
 	            	}
 	                
@@ -1678,7 +1734,7 @@ final Runnable TongueRunnable = new Runnable() {
 	                //the speed is 4 Hz meaning 4 measurements per second
 	                //so if we reduce our speed by X in 2 seconds, then let's show the exclamation
 	                speedDelta = previousSpeed - currentSpeed; 
-	                Log.w("openxc", "Speed Delta: " + speedDelta);
+	               // Log.w("openxc", "Speed Delta: " + speedDelta);
 	                
 	                if ((speedDelta > _rapidBrakeRate) && (rapidBrakePriority >= currentPriority) && (pixelFound == 1)) { //default rapidBrakeRate is 2 km/h deacceleration in 1 second
 	                	    currentPriority = rapidBrakePriority;
@@ -1699,7 +1755,7 @@ final Runnable TongueRunnable = new Runnable() {
 		            			button1TimerRunning = 0;
 		            		}
 
-	            			Log.w("openxc", "rapid brake killed all the timers"); 
+	            		//	Log.w("openxc", "rapid brake killed all the timers"); 
 		            		//**************************************************
 		            		
 		            		if (rapidBrakeTimerRunning == 0) { //now let's check if the timer is running and start it if not
@@ -1728,18 +1784,34 @@ final Runnable TongueRunnable = new Runnable() {
 		            			rapidBrakeTimerRunning = 1;
 		            		}
 	                }
-	              
-	             //   private float currentSpeed;
-	             //   private float previousSpeed; 
-	              //  speedDelta
-	                
-	               
 	            }
 	        });
 	    }
 	};
 	
+	private void UpdateHighSpeed() {
+		
+		i++;
+		if (i == 2) {
+			mSoundPool.stop(mStream1);
+	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(ALERT), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+	   	//	sms.sendTextMessage(_highSpeedSMSTextNumber, null, "speeding alert", null, null);
+	   		_highSpeedTimer.cancel();
+			highSpeedRunningFlag = false;
+			i = 0;
+		}
+		
+		//if (i == 3) {
+			//highSpeedRunningFlag = false;
+			//i = 0;
+		//}	
+	}
 	
+	private void sendSMS(String phoneNumber, String message)
+	   {
+	      // SmsManager sms = SmsManager.getDefault();
+	       sms.sendTextMessage(phoneNumber, null, message, null, null);
+	  }
 	
 	VehicleButtonEvent.Listener mButtonEventWiperListener = new VehicleButtonEvent.Listener() {  //if user pressed a button on the steering wheel
 	    public void receive(Measurement measurement) {
@@ -1759,11 +1831,31 @@ final Runnable TongueRunnable = new Runnable() {
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
 	            	mVehicleWipersView.setText(
-	            	 	"Windshield Wipers: " + _wipers.getValue());
+	            	 	"Wipers: " + _wipers.getValue().booleanValue());
+	            	//boolean breakValue = _brakeStatus.getValue().booleanValue();
 	            }
 	        });
 	    }
 	};
+	
+	IgnitionStatus.Listener mIgnitionListener = new IgnitionStatus.Listener() {  //play rain animation
+	    public void receive(Measurement measurement) {
+	    	final IgnitionStatus _ignition = (IgnitionStatus) measurement;
+	        MainActivity.this.runOnUiThread(new Runnable() {
+	            public void run() {
+	            	
+	            	ignitionString = _ignition.getValue().toString();
+	            	ignitionString = getValueString(ignitionString);
+	            	
+	            	ignitionStatusView.setText(
+	            	 	"Ignition: " + ignitionString);
+	            }
+	        });
+	    }
+	};
+	
+	
+	
 	
 	BrakePedalStatus.Listener mBrakeListener = new BrakePedalStatus.Listener() {
 	    public void receive(Measurement measurement) {
@@ -1773,7 +1865,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            	
 	            	mVehicleBrakeView.setText(
 	                    //"Brake Status: " + _brakeStatus.getValue().doubleValue());
-	            	 	"Brake Status: " + _brakeStatus.getValue().booleanValue());
+	            	 	"Brake: " + _brakeStatus.getValue().booleanValue());
 	            	
 	            	Log.w("openxc", "current priority " + currentPriority); 
 	            	
@@ -1843,7 +1935,9 @@ final Runnable TongueRunnable = new Runnable() {
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
 	            	
-	            	mVehiclePedalView.setText("Pedal Position: " + _pedal.getValue().doubleValue());
+	            	double pedealValue = _pedal.getValue().doubleValue(); 
+	            	String pedalString = String.format("%.1f", pedealValue);	
+	            	mVehiclePedalView.setText("Gas Pedal: " + pedalString);
 	            	
 	            	if (pedalPriority >= currentPriority && pixelFound == 1) { //but don't do anything unless it has display priority AND PIXEL HAS BEEN FOUND
 		            	
@@ -1964,9 +2058,6 @@ final Runnable TongueRunnable = new Runnable() {
 		            	     }
 		            	     
 		            	     currentPriority = pedalPriority; //we've set the display priority to the pedal
-		            	     
-		            	     
-		            	     
 	            	}   
 	            	 //    Log.w("openxc", String.valueOf(pedalRange)); 
 	            }
@@ -2043,11 +2134,11 @@ final Runnable TongueRunnable = new Runnable() {
 	            	
 	            	double gasConsumed = _fullConsumed.getValue().doubleValue();
 	            	double gasCost = gasConsumed * _gasGallonCost;
-	            	String gasCostString = String.format("%.2f", gasCost);
-	            	String gasConsumedString = String.format("%.2f", gasCost);
+	                gasCostString = String.format("%.2f", gasCost);
+	                gasConsumedString = String.format("%.2f", gasConsumed);
 	            	
 	            	mVehicleFuelConsumedView.setText(
-		            	 	"Fuel Consumed Since Start: " + gasConsumedString);
+		            	 	"Trip Fuel: " + gasConsumedString);
 	           
 	            	tripCostView.setText("Trip Cost: $" + gasCostString);
 	            	
@@ -2072,18 +2163,17 @@ final Runnable TongueRunnable = new Runnable() {
 		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(GAS_DROP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
 		        	    	   		g = 0;
 		        	    	   		
-		        	    	   		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
-		        	    	    	tts.speak("you've just used some gas", TextToSpeech.QUEUE_FLUSH, null);    	
+		        	    	   		//tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		        	    	    	//tts.speak("you've just used some gas", TextToSpeech.QUEUE_FLUSH, null);    	
 			            		}
 			            		
 			            		if (TripGasConsumed2 -TripBaselineGas2 > _gasGallonConsumedSoundInterval ) {  //then we've used 1/10 a gallon of gas
 			            			mSoundPool.stop(mStream1);
 		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(BUBBLES), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		        	    	   		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		        	    	    	tts.speak("The cost of this trip so far is $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);    	
 		        	    	   		g2 = 0;
 			            		}
-			            			
-			            		//gasTickSoundInterval
-	            		
 	            	}
 	            		
 	            	
@@ -2095,13 +2185,26 @@ final Runnable TongueRunnable = new Runnable() {
 	    }
 	};
 	
-
+    private void speakTripCost () {
+	   		
+	   		if (gasCostString != null) {
+	    		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		    	tts.speak("The cost of this trip was $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);   
+	   		}
+	   		else {
+	   			tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		    	tts.speak("Gas consumed data is not available", TextToSpeech.QUEUE_FLUSH, null);   
+	   		}
+		
+    }
+	
+	
 	 	HeadlampStatus.Listener mHeadLampListener = new HeadlampStatus.Listener() {
 		    public void receive(Measurement measurement) {
 		    	final HeadlampStatus _headLamp = (HeadlampStatus) measurement;
 		        MainActivity.this.runOnUiThread(new Runnable() {
 		            public void run() {
-		            	mVehicleLightsView.setText("Head Lamp: " + _headLamp.getValue());
+		            	mVehicleLightsView.setText("Lights: " + _headLamp.getValue().booleanValue());
 		            }
 		        });
 		    }
@@ -2114,7 +2217,8 @@ final Runnable TongueRunnable = new Runnable() {
 		    	final HighBeamStatus _headBeam = (HighBeamStatus) measurement;
 		        MainActivity.this.runOnUiThread(new Runnable() {
 		            public void run() {
-		            	mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue());
+		            	mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue().booleanValue());
+		            	//"Wipers: " + _wipers.getValue().booleanValue());
 		            }
 		        });
 		    }
@@ -2123,17 +2227,21 @@ final Runnable TongueRunnable = new Runnable() {
 	
 	
 	
-	//Odometer.Listener mOdometerListener = new Odometer.Listener() {  //play rain animation
-	 //   public void receive(Measurement measurement) {
-	  //  	final Odometer _odometer = (Odometer) measurement;
-	   //     MainActivity.this.runOnUiThread(new Runnable() {
-	    //        public void run() {
-	     //       	mVehicleOdometerView.setText(
-	      //      	 	"Odometer: " + _odometer.getValue().doubleValue());
-	      //      }
-	     //   });
-	  //  }
-//	};
+	Odometer.Listener mOdometerListener = new Odometer.Listener() {  //play rain animation
+	    public void receive(Measurement measurement) {
+	    	final Odometer _odometer = (Odometer) measurement;
+	        MainActivity.this.runOnUiThread(new Runnable() {
+	         	
+	        	double odometerValue2 = _odometer.getValue().doubleValue();
+	        	String odometerString = String.format("%.0f", odometerValue2);
+	        	
+	            public void run() {
+	            	mVehicleOdometerView.setText(
+	            	 	"Odometer: " + odometerString);
+	            }
+	        });
+	    }
+	};
 	
 //	VehicleDoorStatus.Listener mVehicleDoorListener = new VehicleDoorStatus.Listener() {  //play rain animation
 //	    public void receive(Measurement measurement) {
@@ -2150,20 +2258,102 @@ final Runnable TongueRunnable = new Runnable() {
 	TransmissionGearPosition.Listener mGearListener = new TransmissionGearPosition.Listener() {  //play rain animation
 	    public void receive(Measurement measurement) {
 	    	final TransmissionGearPosition _gear = (TransmissionGearPosition) measurement;
+	        //TransmissionGearPosition.GearPosition _gear = new TransmissionGearPosition.GearPosition();
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
+	         
+	            	gearString = _gear.getValue().toString();
+	            	gearString = getValueString(gearString);
 	            	mVehicleGearView.setText(
-	            	 	"Gear: " + _gear.getValue());
+	            	"Gear: " + gearString);
+	            	
+	            	int gearNumber = 0;
+	            	//int[] gearArray = new int[120];
+	            	
+	            	//if (string != null && string.equals(string2)) return true;
+	            	
+	            	if (gearString != null && gearString.equals("REVERSE")) {
+	            		gearNumber = -1;
+	            	}
+	            	else if (gearString != null && gearString.equals("NEUTRAL")) {
+	            		gearNumber = 0;
+	            	}
+	            	else if (gearString != null && gearString.equals("FIRST")) {
+	            		gearNumber = 1;
+	            	}
+	            	else if (gearString != null && gearString.equals("SECOND")) {
+	            		gearNumber = 2;
+	            	}
+	            	else if (gearString != null && gearString.equals("THIRD")) {
+	            		gearNumber = 3;
+	            	}
+	            	else if (gearString != null && gearString.equals("FOURTH")) {
+	            		gearNumber = 4;
+	            	}
+	            	else if (gearString != null && gearString.equals("FIFTH")) {
+	            		gearNumber = 5;
+	            	}
+	            	else if (gearString != null && gearString.equals("SIXTH")) {
+	            		gearNumber = 6;
+	            	}
+	            	else if (gearString != null && gearString.equals("SEVENTH")) {
+	            		gearNumber = 7;
+	            	}
+	            	else if (gearString != null && gearString.equals("EIGHTH")) {
+	            		gearNumber = 8;
+	            	}
+	            	else gearNumber = 0;
+	            	
+	                if (p > 900) {
+	                	p = 0;
+	                }
+	                p++;
+	            	gearArray[p] = gearNumber;  //this must be a global array!
+	               
+	            
+	            	//Log.w("openxc", "gearString: " + gearString);
+	            	Log.w("openxc", "gearNumber: " + gearNumber);
+	            	Log.w("openxc", "current gear: " + gearArray[p]);
+	                Log.w("openxc", "last gear: " + gearArray[p-1]);
+	            	
 	            	
 	            	if (_gearSound == true) {
-		            	mSoundPool.stop(mStream1);
-		    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+	            		
+	            		if (gearArray[p] != gearArray[p-1]) {  //there was a change
+	            		
+		            		if (gearArray[p] > gearArray[p-1]) {  //we went up
+		            			mSoundPool.stop(mStream1);
+				    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            		}
+		            		else {  //otherwise we shifted down
+		            			mSoundPool.stop(mStream1);
+				    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_DOWN), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            		}
+	            		}	
 	            	}
 	            	
 	           }
 	        });
 	    }
 	};
+	
+	public String getValueString(String str ) {  //format is like this "Percentage{value=1.23}" so our job here is to extract the 1.23 and convert that to an int
+		String[] valuePair = str.split("=");
+ 	    String Value = valuePair[1]; //1.23}
+ 	    Value = Value.replace("}", ""); //take out the last bracket
+ 	    Value = Value.trim(); //trim
+ 	   // int pInt = Integer.parseInt(pedalValue); //now convert to int
+		return(Value);
+	}
+	
+	//public int convertInt(String str ) {  //format is like this "Percentage{value=1.23}" so our job here is to extract the 1.23 and convert that to an int
+	//	String[] pedalPair = str.split("=");
+ 	 //   String pedalValue = pedalPair[1]; //1.23}
+ 	 //   pedalValue = pedalValue.replace("}", ""); //take out the last bracket
+ 	 //   pedalValue = pedalValue.trim(); //trim
+ 	 //   int pInt = Integer.parseInt(pedalValue); //now convert to int
+//		return(pInt);
+//	}
 
 
 	@Override

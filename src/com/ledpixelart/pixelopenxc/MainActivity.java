@@ -127,7 +127,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private short[] frame_ = new short[512];
   	public static final Bitmap.Config FAST_BITMAP_CONFIG = Bitmap.Config.RGB_565;
   	private byte[] BitmapBytes;
-  	private int [] gearArray2;
+  
   	private InputStream BitmapInputStream;
   	private Bitmap canvasBitmap;
   	private int width_original;
@@ -201,10 +201,17 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private int g = 0; //for the gas consumed piece
     private int g2 = 0;
     private int p = 0; //used for gear
-    private int lastGear = 0;
-    private int currentGear = 0;
+    private int s = 0; //used for speed array
+    private int f = 0;
+  //  private int lastGear = 0;
+  //  private int currentGear = 0;
     
     private int[] gearArray = new int[1000];
+    private double[] speedArray = new double[1000];
+    private double[] fuelConsumedArray = new double[1000];
+    
+    private boolean rapidAccerlationEnded = false;
+    private double accerlationEventCost = 0;
     
     private float _gasGallonCost;
     
@@ -215,12 +222,32 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private float _gasTickSoundInterval;
     private int _gasGallonConsumedSoundInterval;
     
+    private boolean _fbombEnable;
+    private boolean _rapidAccelerationEventEnable;
+    private int _rapidAccelerationEventInterval;
+    private int _rapidAccelerationEventRate;
+    private String _rapidAccelerationEventText;
+    private float _rapidAccelerationEventMoney;
+   
     private Timer _pedalTimer;
     private Timer _birdTimer;
     private Timer _thxTimer;
     private Timer _rapidBrakeTimer;
     private Timer _tongueTimer;
     private Timer _highSpeedTimer;
+    private Timer _highBeamTimer;
+    private Timer _ignitionTimer;
+    
+  //  private int ignitionPlaying = 0;
+    private int ignitionStartPlaying = 0;
+    private int ignitionOffPlaying = 0;
+    private boolean highBeamsOn = false;
+    private boolean highBeamSoundPlayed = false;
+    private boolean highBeamSoundOffPlayed = false;
+    
+    private boolean headLightsOn = false;
+    private boolean headLightsSoundPlayed = false;
+    private boolean headLightsSoundOffPlayed = false;
     
     private float proxValue;
   
@@ -231,6 +258,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private double speedDelta;
     private double TripBaselineGas;
     private double TripGasConsumed;
+    
+	private double gasConsumed;
+	private double gasCost;
     
     private double TripBaselineGas2;
     private double TripGasConsumed2;
@@ -248,17 +278,17 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     final static int LOOP_1_TIME = 0;
     final static int LOOP_3_TIMES = 2;
     
-    final static int ACCEL1 = 1;
-    final static int ACCEL2 = 2;
-    final static int ACCEL3 = 3;
-    final static int ACCEL4 = 4;
-    final static int ACCEL5 = 5;
-    final static int ACCEL6 = 6;
-    final static int ACCEL7 = 7;
-    final static int ACCEL8 = 8;
-    final static int ACCEL9 = 9;
-    final static int ACCEL10 = 10;
-    final static int ACCEL11 = 11;
+  //  final static int ACCEL1 = 1;
+  //  final static int ACCEL2 = 2;
+  //  final static int ACCEL3 = 3;
+  //  final static int ACCEL4 = 4;
+  //  final static int ACCEL5 = 5;
+  //  final static int ACCEL6 = 6;
+  //  final static int ACCEL7 = 7;
+  //  final static int ACCEL8 = 8;
+  //  final static int ACCEL9 = 9;
+  //  final static int ACCEL10 = 10;
+  //  final static int ACCEL11 = 11;
     final static int JETSONS_START = 12;
     final static int JETSONS_RUNNING = 13;
     final static int THANKS = 14;
@@ -276,6 +306,8 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     final static int POWERUP2 = 26;
     final static int RAYGUN = 27;
     final static int ALERT = 27;
+    final static int POWERDOWN = 28;
+    private static int HIGHBEAM_OFF = 29;
     
     private float  streamVolume;
     
@@ -336,6 +368,11 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
             Log.v(LOG_TAG, e.getMessage());
         }
         
+        _thanksButton = (Button) findViewById(R.id.thanks_button);
+		 _fuButton = (Button) findViewById(R.id.fu_button);
+		 _tongueButton = (Button) findViewById(R.id.tongue_button);
+		 _tripCostButton = (Button) findViewById(R.id.tripCostButton);
+        
         //******** preferences code
         resources = this.getResources();
         setPreferences();
@@ -377,13 +414,8 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 		button1View = (TextView) findViewById(R.id.buttonOne);
 		button2View = (TextView) findViewById(R.id.buttonTwo);
 		
-		 _thanksButton = (Button) findViewById(R.id.thanks_button);
-		 _fuButton = (Button) findViewById(R.id.fu_button);
-		 _tongueButton = (Button) findViewById(R.id.tongue_button);
-		 _tripCostButton = (Button) findViewById(R.id.tripCostButton);
-		 
-		 tripCostView = (TextView) findViewById(R.id.tripCost);
-		 ignitionStatusView = (TextView) findViewById(R.id.ignitionStatus);
+		tripCostView = (TextView) findViewById(R.id.tripCost);
+		ignitionStatusView = (TextView) findViewById(R.id.ignitionStatus);
 		
 		Intent intent = new Intent(this, VehicleManager.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);  
@@ -395,17 +427,17 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
         mSoundPoolMap.put(JETSONS_START, mSoundPool.load(this, R.raw.jetsons_startup, 1));
         mSoundPoolMap.put(JETSONS_RUNNING, mSoundPool.load(this, R.raw.jetsons_running, 1));
         
-        mSoundPoolMap.put(ACCEL1, mSoundPool.load(this, R.raw.accel1, 1));
-        mSoundPoolMap.put(ACCEL2, mSoundPool.load(this, R.raw.accel2, 1));
-        mSoundPoolMap.put(ACCEL3, mSoundPool.load(this, R.raw.accel3, 1));
-        mSoundPoolMap.put(ACCEL4, mSoundPool.load(this, R.raw.accel4, 1));
-        mSoundPoolMap.put(ACCEL5, mSoundPool.load(this, R.raw.accel5, 1));
-        mSoundPoolMap.put(ACCEL6, mSoundPool.load(this, R.raw.accel6, 1));
-        mSoundPoolMap.put(ACCEL7, mSoundPool.load(this, R.raw.accel7, 1));
-        mSoundPoolMap.put(ACCEL8, mSoundPool.load(this, R.raw.accel8, 1));
-        mSoundPoolMap.put(ACCEL9, mSoundPool.load(this, R.raw.accel9, 1));
-        mSoundPoolMap.put(ACCEL10, mSoundPool.load(this, R.raw.accel10, 1));
-        mSoundPoolMap.put(ACCEL11, mSoundPool.load(this, R.raw.accel11, 1));
+      //  mSoundPoolMap.put(ACCEL1, mSoundPool.load(this, R.raw.accel1, 1));
+      //  mSoundPoolMap.put(ACCEL2, mSoundPool.load(this, R.raw.accel2, 1));
+      //  mSoundPoolMap.put(ACCEL3, mSoundPool.load(this, R.raw.accel3, 1));
+      //  mSoundPoolMap.put(ACCEL4, mSoundPool.load(this, R.raw.accel4, 1));
+       // mSoundPoolMap.put(ACCEL5, mSoundPool.load(this, R.raw.accel5, 1));
+       // mSoundPoolMap.put(ACCEL6, mSoundPool.load(this, R.raw.accel6, 1));
+       // mSoundPoolMap.put(ACCEL7, mSoundPool.load(this, R.raw.accel7, 1));
+      //  mSoundPoolMap.put(ACCEL8, mSoundPool.load(this, R.raw.accel8, 1));
+      //  mSoundPoolMap.put(ACCEL9, mSoundPool.load(this, R.raw.accel9, 1));
+      //  mSoundPoolMap.put(ACCEL10, mSoundPool.load(this, R.raw.accel10, 1));
+      //  mSoundPoolMap.put(ACCEL11, mSoundPool.load(this, R.raw.accel11, 1));
         
         mSoundPoolMap.put(THANKS, mSoundPool.load(this, R.raw.uthanks, 1));
         mSoundPoolMap.put(BIRD, mSoundPool.load(this, R.raw.ubird, 1));
@@ -418,15 +450,16 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
         mSoundPoolMap.put(SHIFT_UP, mSoundPool.load(this, R.raw.shiftup, 1));
         
         mSoundPoolMap.put(LIGHTS_ON, mSoundPool.load(this, R.raw.lights, 1));
-        mSoundPoolMap.put(LIGHTS_OFF, mSoundPool.load(this, R.raw.lights, 1));
-        mSoundPoolMap.put(HIGHBEAM_ON, mSoundPool.load(this, R.raw.highbeam, 1));
-        mSoundPoolMap.put(BUBBLES, mSoundPool.load(this, R.raw.bubbles, 1));
+        mSoundPoolMap.put(LIGHTS_OFF, mSoundPool.load(this, R.raw.lights_off, 1));
+        mSoundPoolMap.put(HIGHBEAM_ON, mSoundPool.load(this, R.raw.raygunecho, 1));
+        mSoundPoolMap.put(HIGHBEAM_OFF, mSoundPool.load(this, R.raw.lights_powerdown, 1));
+        mSoundPoolMap.put(BUBBLES, mSoundPool.load(this, R.raw.water_guzzles, 1));
         
         mSoundPoolMap.put(POWERUP, mSoundPool.load(this, R.raw.powerup, 1));
         mSoundPoolMap.put(POWERUP2, mSoundPool.load(this, R.raw.powerup2, 1));
         mSoundPoolMap.put(RAYGUN, mSoundPool.load(this, R.raw.raygun, 1));
         mSoundPoolMap.put(ALERT, mSoundPool.load(this, R.raw.alert, 1));
-        
+        mSoundPoolMap.put(POWERDOWN, mSoundPool.load(this, R.raw.powerdown, 1));
         
     	streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         streamVolume = streamVolume / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -1064,19 +1097,21 @@ final Runnable TongueRunnable = new Runnable() {
     debug_ = prefs.getBoolean("pref_debugMode", false);
     
     _pedalSound = prefs.getBoolean("pref_pedalSound", false);
-    _msgSound = prefs.getBoolean("pref_msgSound", false);
-    _gearSound = prefs.getBoolean("pref_gearSound", false);
+   // _msgSound = prefs.getBoolean("pref_msgSound", false);
+    _gearSound = prefs.getBoolean("pref_gearSound", true);
     _gasConsumedSound = prefs.getBoolean("pref_gasConsumedSound", true);
-    _HeadlightSound = prefs.getBoolean("pref_HeadlightSound", false);
-    _highBeamSound = prefs.getBoolean("pref_highBeamSound", false);
+    _HeadlightSound = prefs.getBoolean("pref_HeadlightSound", true);
+    _highBeamSound = prefs.getBoolean("pref_highBeamSound", true);
     _highSpeedAlarmSound = prefs.getBoolean("pref_highSpeedAlarmSound", false);
-    _ignitionSound = prefs.getBoolean("pref_ignitionSound", false);
-    _wipersSound = prefs.getBoolean("pref_wipersSound", false);
+    _ignitionSound = prefs.getBoolean("pref_ignitionSound", true);
+   // _wipersSound = prefs.getBoolean("pref_wipersSound", false);
     _rapidDecelerationSound = prefs.getBoolean("pref_rapidDecelerationSound", true);
     
     _enablePedal = prefs.getBoolean("pref_enablePedal", true);
     _enableIOIOButtons = prefs.getBoolean("pref_enableIOIOButtons", false);
     _enablePIXEL = prefs.getBoolean("pref_enablePIXEL", true);
+    
+    _fbombEnable = prefs.getBoolean("pref_fbombEnable", false);
     
     _highSpeedSMS = prefs.getBoolean("pref_highSpeedSMS", false);
     
@@ -1116,7 +1151,26 @@ final Runnable TongueRunnable = new Runnable() {
  	        resources.getString(R.string.pref_gasGallonCost),
  	        resources.getString(R.string.gasGallonCostDefault))); 
      
+     _rapidAccelerationEventEnable = prefs.getBoolean("pref_rapidAccelerationEventEnable", true);
      
+     _rapidAccelerationEventInterval = Integer.valueOf(prefs.getString(   
+ 	        resources.getString(R.string.pref_rapidAccelerationEventInterval),
+ 	        resources.getString(R.string.rapidAccelerationEventIntervalDefault))); 
+   
+     _rapidAccelerationEventRate = Integer.valueOf(prefs.getString(   
+  	        resources.getString(R.string.pref_rapidAccelerationEventRate),
+  	        resources.getString(R.string.rapidAccelerationEventIntervalDefault))); 
+    
+     _rapidAccelerationEventText = prefs.getString(   
+   	        resources.getString(R.string.pref_rapidAccelerationEventText),
+   	        resources.getString(R.string.rapidAccelerationEventTextDefault)); 
+   
+     _rapidAccelerationEventMoney = Float.valueOf(prefs.getString(   
+  	        resources.getString(R.string.pref_rapidAccelerationEventMoney),
+  	        resources.getString(R.string.rapidAccelerationEventMoneyDefault))); 
+   
+     
+    
     
     
     switch (matrix_model) {  //the user can use other LED displays other than PIXEL's by choosing from preferences
@@ -1140,6 +1194,13 @@ final Runnable TongueRunnable = new Runnable() {
    	 KIND = ioio.lib.api.RgbLedMatrix.Matrix.SEEEDSTUDIO_32x32; //v2 as the default, it has 2 IDC connectors
    	 BitmapInputStream = getResources().openRawResource(R.raw.openxcgrey);
     }
+    
+   if (_fbombEnable == false ) {
+    	_fuButton.setVisibility(View.GONE);
+    }
+   else {
+	   _fuButton.setVisibility(View.VISIBLE);
+   }
         
     frame_ = new short [KIND.width * KIND.height];
 	 BitmapBytes = new byte[KIND.width * KIND.height *2]; //512 * 2 = 1024 or 1024 * 2 = 2048
@@ -1513,9 +1574,6 @@ final Runnable TongueRunnable = new Runnable() {
 				e.printStackTrace();
 			}
 	        
-	        //add the button listeners !!!!!
-	        
-	        
 	       try {
 				mVehicleManager.addListener(BrakePedalStatus.class, mBrakeListener);
 			} catch (VehicleServiceException e) {
@@ -1551,7 +1609,7 @@ final Runnable TongueRunnable = new Runnable() {
 	       }
 	       
 	       
-	       if (_wipersSound == true) {
+	      
 		       try {
 					mVehicleManager.addListener(VehicleButtonEvent.class, mButtonEventWiperListener);
 				} catch (VehicleServiceException e) {
@@ -1559,7 +1617,7 @@ final Runnable TongueRunnable = new Runnable() {
 				} catch (UnrecognizedMeasurementTypeException e) {
 					e.printStackTrace();
 				}
-	       }
+	      
 	        
 	        
 	        
@@ -1571,15 +1629,7 @@ final Runnable TongueRunnable = new Runnable() {
 	//			e.printStackTrace();
 	//		}
 	       
-	   	//  private boolean ;
-		 	  //  private boolean _gasConsumedSound;
-		 	 // ;
-		 	  //  private boolean ;
-		 	  //  private boolean _highSpeedAlarmSound;
-		 	  //  private boolean _ignitionSound;
-		 	  //  private boolean _wipersSound;
-		 	
-		 	//if (_HeadlightSound == true)  {
+	 
 	        
 	        try {
 				mVehicleManager.addListener(FuelConsumed.class, mFuelConsumedListener);
@@ -1589,7 +1639,7 @@ final Runnable TongueRunnable = new Runnable() {
 				e.printStackTrace();
 			}
 	        
-	        //add some sound effect for fuel consumed, that would be cool!
+	      
 	        
 	        try {
 				mVehicleManager.addListener(TurnSignalStatus.class, mTurnSignalListener);
@@ -1599,24 +1649,7 @@ final Runnable TongueRunnable = new Runnable() {
 				e.printStackTrace();
 			}
 	        
-	        
-	       // private boolean _pedalSound;
-	       // private boolean _msgSound;
-	       // private boolean _gearSound;
-	       // private boolean _gasConsumedSound;
-	       // private boolean _HeadlightSound;
-	       // private boolean _highBeamSound;
-	       // private boolean _highSpeedAlarmSound;
-	       // private boolean _ignitionSound;
-	       // private boolean ;
-	        
-	       // private boolean _enablePedal;
-	       // private boolean _enableIOIOButtons;
-	       // private boolean _enablePIXEL;
-	       // private boolean _highSpeedSMS;
-	       // private int _highSpeedSMSThreshold;
-	        
-	        if (_HeadlightSound == true) {
+	       
 		        try {
 					mVehicleManager.addListener(HeadlampStatus.class, mHeadLampListener);
 				} catch (VehicleServiceException e) {
@@ -1624,9 +1657,9 @@ final Runnable TongueRunnable = new Runnable() {
 				} catch (UnrecognizedMeasurementTypeException e) {
 					e.printStackTrace();
 				}
-	        }
+	       
 	        
-	        if (_highBeamSound == true) {
+	       
 		        try {
 					mVehicleManager.addListener(HighBeamStatus.class, mHighBeamListener);
 				} catch (VehicleServiceException e) {
@@ -1634,18 +1667,17 @@ final Runnable TongueRunnable = new Runnable() {
 				} catch (UnrecognizedMeasurementTypeException e) {
 					e.printStackTrace();
 				}
-	        }
+	     
 	        
-	        if (_wipersSound == true) {
-		        try {
-					mVehicleManager.addListener(WindshieldWiperStatus.class, mWindshieldWiperListener);
-				} catch (VehicleServiceException e) {
-					e.printStackTrace();
-				} catch (UnrecognizedMeasurementTypeException e) {
-					e.printStackTrace();
-				}
-	        }
-	        
+	     
+		    //    try {
+			//		mVehicleManager.addListener(WindshieldWiperStatus.class, mWindshieldWiperListener);
+			//	} catch (VehicleServiceException e) {
+			//		e.printStackTrace();
+			//	} catch (UnrecognizedMeasurementTypeException e) {
+			//		e.printStackTrace();
+			//	}
+	      
 	        try {
 				mVehicleManager.addListener(Odometer.class, mOdometerListener);
 			} catch (VehicleServiceException e) {
@@ -1713,6 +1745,53 @@ final Runnable TongueRunnable = new Runnable() {
 		            		
 		            	 }
 	            	}
+	            	
+	            	if (_rapidAccelerationEventEnable == true) {
+	            	
+			            	s++;
+				            speedArray[s] = speed;  //this must be a global array!
+				            fuelConsumedArray[s] = gasConsumed;
+				            	
+				            if (s > 900) {
+				            	s = 0;
+				            	f = 0;
+				            	rapidAccerlationEnded = false;
+				            }
+				            	//if (_gearSound == true) {
+				             if (s > 12) {  //let's get a min number of data points before we go here
+				            	 
+					            		if (speedArray[s] - speedArray[s-(4*_rapidAccelerationEventInterval)] > _rapidAccelerationEventRate) {  //we're going up
+					            			f++;
+					            			//Log.w("openxc", "speed: " + speed);
+					       		            //Log.w("openxc", "current speed: " + speedArray[s]);
+					       		            //Log.w("openxc", "speed - 4: " + speedArray[s-4]);
+					            			
+					            			//mSoundPool.stop(mStream1);
+							    	   		//mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+							    	   		//accerlationEventCost = (fuelConsumedArray[s] - fuelConsumedArray[s-4]) *  _gasGallonCost;
+							    	   	    //Log.w("openxc", "accerlation cost: " + accerlationEventCost);
+					            		} 
+					            		else {
+					            			rapidAccerlationEnded = true;
+					            		}
+					            		
+					            		if (f > 0 && rapidAccerlationEnded == true) { //it was an extended accerlation event
+					            			accerlationEventCost = (fuelConsumedArray[s] - fuelConsumedArray[s-(4+f)]) *  _gasGallonCost;
+					            			//Log.w("openxc", "accerlation cost: " + accerlationEventCost);
+					            			//Log.w("openxc", "f: " + f);
+					       		            //Log.w("openxc", "s: " + s);
+					            			f = 0; //reset
+					            			rapidAccerlationEnded = false;
+					            			
+					            			if (accerlationEventCost > _rapidAccelerationEventMoney) {
+					            				String accerlationEventCostString = String.format("%.2f", accerlationEventCost);	
+					            				tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+					        	    	    	tts.speak(_rapidAccelerationEventText + accerlationEventCostString, TextToSpeech.QUEUE_FLUSH, null); 
+					            			}
+					            		}
+				                }
+	            	} 
+	            	
 	                
 	                if (v == 0) { //what we'll do here is take two snapshots reading, one reading a second ago and then other the current time, then compare these to see if we have a rapid deceleration event
 	                	previousSpeed = _speed.getValue().doubleValue() * 0.621371;
@@ -1849,6 +1928,23 @@ final Runnable TongueRunnable = new Runnable() {
 	            	
 	            	ignitionStatusView.setText(
 	            	 	"Ignition: " + ignitionString);
+	            
+	            	if (_ignitionSound == true) {
+	            	
+		            	if (ignitionString != null && ignitionStartPlaying == 0 && ignitionString.equals("START")) {  //valid ignition values are: 	ACCESSORY, OFF, RUN, OR START	 
+		            		ignitionStartPlaying = 1;  //only clear this if we go to off state
+		            		ignitionOffPlaying = 0;
+		            		mSoundPool.stop(mStream1);
+	    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERUP2), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            	}
+		            	
+		            	if (ignitionString != null && ignitionOffPlaying == 0 && ignitionString.equals("OFF")) {  //valid ignition values are: 	ACCESSORY, OFF, RUN, OR START	 
+		            		ignitionOffPlaying = 1;  //only clear this if we go to off state
+		            		ignitionStartPlaying = 0;
+		            		mSoundPool.stop(mStream1);
+	    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERDOWN), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            	}
+	            	}
 	            }
 	        });
 	    }
@@ -1867,7 +1963,7 @@ final Runnable TongueRunnable = new Runnable() {
 	                    //"Brake Status: " + _brakeStatus.getValue().doubleValue());
 	            	 	"Brake: " + _brakeStatus.getValue().booleanValue());
 	            	
-	            	Log.w("openxc", "current priority " + currentPriority); 
+	            	//Log.w("openxc", "current priority " + currentPriority); 
 	            	
 	            	if (brakePriority >= currentPriority && pixelFound == 1) { 
 	            		
@@ -1875,7 +1971,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            			//pedalTimer.cancel();
 	            			_pedalTimer.cancel();
 	            			pedalTimerRunning = 0;
-	            			Log.w("openxc", "brake killed the pedal timer"); 
+	            			//Log.w("openxc", "brake killed the pedal timer"); 
 	            		}
 	            		
 	            		//pedalTimer.cancel(); //stop the timer
@@ -1886,8 +1982,8 @@ final Runnable TongueRunnable = new Runnable() {
 	            		if (breakValue == true ) {
 	            			
 	            			currentPriority = brakePriority;
-	            			Log.w("openxc", "brake was true"); 
-	            			Log.w("openxc", "Speed Delta: " + speedDelta);
+	            			//Log.w("openxc", "brake was true"); 
+	            			//Log.w("openxc", "Speed Delta: " + speedDelta);
 	            			if (speedDelta > 2) {
 	            				try {
 	            					writeSuddenBrakeImage();  //we'll need to add some code here to hold this image as well for the sudden brake acceleration
@@ -1909,7 +2005,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            		}
 	            		else {
 	            			 
-	            			Log.w("openxc", "brake was false"); 
+	            			//Log.w("openxc", "brake was false"); 
 	            			 currentPriority = 0;
 	            			// try {
 								//	clearMatrixImage();
@@ -1979,7 +2075,7 @@ final Runnable TongueRunnable = new Runnable() {
 		            	     if (pedalValue > 3 && pedalValue < 7)  {
 		            	    	 pedalRange = 3;
 		            	    	 
-		            	    	   	if (acceleratorSounds == true) {
+		            	    	   	if (_pedalSound == true) {
 		            	    	   		mSoundPool.stop(mStream1);
 		            	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(JETSONS_RUNNING), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
 		            	    	   	}
@@ -2073,14 +2169,14 @@ final Runnable TongueRunnable = new Runnable() {
 	            	mVehicleTurnSignalView.setText(
 	            	 	"Turn Signal: " + _turnSignal.getValue());
 	            	
-	            	Log.w("openxc", String.valueOf(_turnSignal)); 
+	            	//Log.w("openxc", String.valueOf(_turnSignal)); 
 	            	
 	            	if (turnPriority >= currentPriority && pixelFound == 1) { 
 	            		
 	            		if (pedalTimerRunning == 1) { //now let's check if the timer is running and start it if not
 	            			_pedalTimer.cancel();
 	            			pedalTimerRunning = 0;
-	            			Log.w("openxc", "turn signal killed the pedal timer"); 
+	            			//("openxc", "turn signal killed the pedal timer"); 
 	            		}
 	            		
 	            	}
@@ -2104,14 +2200,7 @@ final Runnable TongueRunnable = new Runnable() {
 		   // }
 //		};
 		
-		//public int convertInt(String str ) {  //format is like this "Percentage{value=1.23}" so our job here is to extract the 1.23 and convert that to an int
-		//	String[] pedalPair = str.split("=");
-	 	 //   String pedalValue = pedalPair[1]; //1.23}
-	 	 //   pedalValue = pedalValue.replace("}", ""); //take out the last bracket
-	 	 //   pedalValue = pedalValue.trim(); //trim
-	 	 //   int pInt = Integer.parseInt(pedalValue); //now convert to int
-//			return(pInt);
-//		}
+	
 		
 	
 //	FuelLevel.Listener mFuelLevelListener = new FuelLevel.Listener() {
@@ -2132,8 +2221,8 @@ final Runnable TongueRunnable = new Runnable() {
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
 	            	
-	            	double gasConsumed = _fullConsumed.getValue().doubleValue();
-	            	double gasCost = gasConsumed * _gasGallonCost;
+	            	gasConsumed = _fullConsumed.getValue().doubleValue();
+	            	gasCost = gasConsumed * _gasGallonCost;
 	                gasCostString = String.format("%.2f", gasCost);
 	                gasConsumedString = String.format("%.2f", gasConsumed);
 	            	
@@ -2170,8 +2259,8 @@ final Runnable TongueRunnable = new Runnable() {
 			            		if (TripGasConsumed2 -TripBaselineGas2 > _gasGallonConsumedSoundInterval ) {  //then we've used 1/10 a gallon of gas
 			            			mSoundPool.stop(mStream1);
 		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(BUBBLES), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
-		        	    	   		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
-		        	    	    	tts.speak("The cost of this trip so far is $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);    	
+		        	    	   		//tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		        	    	    	//tts.speak("Trip cost so far is $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);    	
 		        	    	   		g2 = 0;
 			            		}
 	            	}
@@ -2205,6 +2294,25 @@ final Runnable TongueRunnable = new Runnable() {
 		        MainActivity.this.runOnUiThread(new Runnable() {
 		            public void run() {
 		            	mVehicleLightsView.setText("Lights: " + _headLamp.getValue().booleanValue());
+		            	
+		            	 if (_highBeamSound == true) {
+			            		
+		            		 _HeadlightSound = _headLamp.getValue().booleanValue();
+				            	
+				            	if (headLightsOn == true && headLightsSoundPlayed == false) {
+				            		headLightsSoundPlayed = true;
+				            		headLightsSoundOffPlayed = false;
+				            		mSoundPool.stop(mStream1);
+		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(LIGHTS_ON), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+				            	}
+				            	
+				            	if (headLightsOn == false && headLightsSoundOffPlayed == false) {  //?? not sure about the sound off play as the default of false, better test that
+				            		headLightsSoundOffPlayed = true;
+				            		headLightsSoundPlayed = false;
+				            		mSoundPool.stop(mStream1);
+		        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(LIGHTS_OFF), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+				            	}
+			            	}
 		            }
 		        });
 		    }
@@ -2218,7 +2326,27 @@ final Runnable TongueRunnable = new Runnable() {
 		        MainActivity.this.runOnUiThread(new Runnable() {
 		            public void run() {
 		            	mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue().booleanValue());
-		            	//"Wipers: " + _wipers.getValue().booleanValue());
+		            	
+		            if (_highBeamSound == true) {
+		            		
+			            	highBeamsOn = _headBeam.getValue().booleanValue();
+			            	
+			            	if (highBeamsOn == true && highBeamSoundPlayed == false) {
+			            		highBeamSoundPlayed = true;
+			            		highBeamSoundOffPlayed = false;
+			            		mSoundPool.stop(mStream1);
+	        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(HIGHBEAM_ON), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+			            	}
+			            	
+			            	if (highBeamsOn == false && highBeamSoundOffPlayed == false) {
+			            		highBeamSoundOffPlayed = true;
+			            		highBeamSoundPlayed = false;
+			            		mSoundPool.stop(mStream1);
+	        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(HIGHBEAM_OFF), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+			            	}
+		            	}
+		            	
+		            	
 		            }
 		        });
 		    }
@@ -2311,10 +2439,10 @@ final Runnable TongueRunnable = new Runnable() {
 	            	gearArray[p] = gearNumber;  //this must be a global array!
 	               
 	            
-	            	//Log.w("openxc", "gearString: " + gearString);
-	            	Log.w("openxc", "gearNumber: " + gearNumber);
-	            	Log.w("openxc", "current gear: " + gearArray[p]);
-	                Log.w("openxc", "last gear: " + gearArray[p-1]);
+	            	//("openxc", "gearString: " + gearString);
+	            	//Log.w("openxc", "gearNumber: " + gearNumber);
+	            	//Log.w("openxc", "current gear: " + gearArray[p]);
+	               // Log.w("openxc", "last gear: " + gearArray[p-1]);
 	            	
 	            	
 	            	if (_gearSound == true) {

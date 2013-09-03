@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">PIXEL OpenXC v2</string>
+    <string name="app_name">PIXEL OpenXC</string>
     <string name="action_settings">Settings</string>
     
     <string name="menu_about_title">About</string> 
@@ -40,7 +40,8 @@
     <string name="pref_debugModeDefault">false</string>    
     <string name="debugModeSummary">Displays debug messages, use to see how often the Bluetooth connections are getting disconnected and connected as well as other debug messages</string>
   
-    <string name="soundSettings">Sound Events</string>    
+    <string name="soundSettings">Sound FX Events</string>    
+    <string name="accel_and_decel_events">Rapid Acceleration Detection Settings</string>    
     <string name="PIXELSettings">PIXEL LED Display</string>    
     
     <string name="pedalSound">Pedal</string>    
@@ -55,7 +56,7 @@
     
     <string name="gearSound">Gear Changes</string>    
     <string name="pref_gearSound">pref_gearSound</string>
-    <string name="gearSoundDefault">false</string>    
+    <string name="gearSoundDefault">true</string>    
     <string name="gearSoundSummary">Soundbyte on gear changes</string>
     
     <string name="gasConsumedSound">Gas Consumed</string>    
@@ -65,7 +66,7 @@
     
     <string name="gasGallonCost">Gas Cost per Gallon</string>    
     <string name="pref_gasGallonCost">pref_gasGallonCost</string>
-    <string name="gasGallonCostDefault">3.40</string>    
+    <string name="gasGallonCostDefault">4.00</string>    
     <string name="gasGallonCostSummary"></string>
     
     <string name="HeadlightSound">Headlights</string>    
@@ -95,7 +96,7 @@
   
     <string name="wipersSound">Wipers</string>    
     <string name="pref_wipersSound">pref_wipersSound</string>
-    <string name="wipersSoundDefault">true</string>    
+    <string name="wipersSoundDefault">false</string>    
     <string name="wipersSoundSummary"></string>
     
     <string name="enablePedal">Pedal Bars Indicator</string>    
@@ -108,10 +109,10 @@
     <string name="rapidDecelerationSoundDefault">true</string>    
     <string name="rapidDecelerationSoundSummary">Danger Will Robinson soundbyte</string>
     
-    <string name="enableIOIOButtons">Enable Message Buttons</string>    
+    <string name="enableIOIOButtons">Enable Physical Message Buttons</string>    
     <string name="pref_enableIOIOButtons">pref_enableIOIOButtons</string>
     <string name="enableIOIOButtonsDefault">false</string>    
-    <string name="enableIOIOButtonsSummary"></string>
+    <string name="enableIOIOButtonsSummary">Plug physical buttons into the PIXEL board digital ports</string>
     
     <string name="enablePIXEL">Enable PIXEL</string>    
     <string name="pref_enablePIXEL">pref_enablePIXEL</string>
@@ -152,6 +153,36 @@
    <string name="pref_rapidBrakeDisplayTime">pref_rapidBrakeDisplayTime</string>
    <string name="rapidBrakeDisplayTimeDefault">3</string>
    <string name="rapidBrakeDisplayTimeSummary">How many seconds to display the rapid deceleration indicator image on PIXEL</string>
+   
+   <string name="rapidAccelerationEventEnable">Rapid Acceleration Event</string>    
+   <string name="pref_rapidAccelerationEventEnable">pref_rapidAccelerationEventEnable</string>
+   <string name="rapidAccelerationEventEnableDefault">true</string>
+   <string name="rapidAccelerationEventEnableSummary">Speaks the cost of a rapid acceleration event</string>
+   
+   <string name="rapidAccelerationEventInterval">Rapid Acceleration Interval</string>    
+   <string name="pref_rapidAccelerationEventInterval">pref_rapidAccelerationEventInterval</string>
+   <string name="rapidAccelerationEventIntervalDefault">1</string>
+   <string name="rapidAccelerationEventIntervalSummary">Default interval is 1 second</string>
+   
+   <string name="rapidAccelerationEventRate">Rapid Acceleration Threshold Rate</string>    
+   <string name="pref_rapidAccelerationEventRate">pref_rapidAccelerationEventRate</string>
+   <string name="rapidAccelerationEventRateDefault">2</string>
+   <string name="rapidAccelerationEventRateSummary">Default acceleration trigger rate is 2 mph per second</string>
+   
+   <string name="rapidAccelerationEventText">Rapid Acceleration Text</string>    
+   <string name="pref_rapidAccelerationEventText">pref_rapidAccelerationEventText</string>
+   <string name="rapidAccelerationEventTextDefault">Rapid acceleration event detected at a cost of $</string>
+   <string name="rapidAccelerationEventTextSummary">TTS text readout</string>
+   
+   <string name="rapidAccelerationEventMoney">Rapid Acceleration Money Threshold</string>    
+   <string name="pref_rapidAccelerationEventMoney">pref_rapidAccelerationEventMoney</string>
+   <string name="rapidAccelerationEventMoneyDefault">.10</string>
+   <string name="rapidAccelerationEventMoneySummary">The event will trigger if the cost is higher than this</string>
+   
+   <string name="fbombEnable">Enable F-Bomb</string>    
+   <string name="pref_fbombEnable">pref_fbombEnable</string>
+   <string name="fbombEnableDefault">false</string>
+   <string name="fbombEnableSummary">Enables the F-bomb PIXEL LED display animation</string>
           
    <style name="ButtonText">
     <item name="android:layout_width">fill_parent</item>

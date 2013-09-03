@@ -45,8 +45,13 @@
     android:numeric="integer"
     android:defaultValue="@string/highSpeedSMSTextNumberDefault"
     android:summary="@string/highSpeedSMSTextNumberSummary"/>
-    
-  
+     
+      <EditTextPreference
+    android:title="@string/gasGallonCost"
+    android:key="@string/pref_gasGallonCost"
+    android:numeric="decimal"
+    android:defaultValue="@string/gasGallonCostDefault"
+    android:summary="@string/gasGallonCostSummary"/>
     
     <PreferenceCategory
     android:title="@string/soundSettings"  
@@ -56,12 +61,6 @@
     android:key="pref_pedalSound"
     android:defaultValue="@string/pedalSoundDefault"
     android:summary="@string/pedalSoundSummary"/>
-    
-    <CheckBoxPreference
-    android:title="@string/msgSound"
-    android:key="pref_msgSound"
-    android:defaultValue="@string/msgSoundDefault"
-    android:summary="@string/msgSoundSummary"/>
      
     <CheckBoxPreference
     android:title="@string/gearSound"
@@ -69,7 +68,7 @@
     android:defaultValue="@string/gearSoundDefault"
     android:summary="@string/gearSoundSummary"/>
     
-     <CheckBoxPreference
+    <CheckBoxPreference
     android:title="@string/gasConsumedSound"
     android:key="pref_gasConsumedSound"
     android:defaultValue="@string/gasConsumedSoundDefault"
@@ -89,20 +88,7 @@
     android:defaultValue="@string/gasGallonConsumedSoundIntervalDefault"
     android:summary="@string/gasGallonConsumedSoundIntervalSummary"/>
     
-    <EditTextPreference
-    android:title="@string/gasGallonCost"
-    android:key="@string/pref_gasGallonCost"
-    android:numeric="integer"
-    android:defaultValue="@string/gasGallonCostDefault"
-    android:summary="@string/gasGallonCostSummary"/>
-    
-     <CheckBoxPreference
-    android:title="@string/HeadlightSound"
-    android:key="pref_HeadlightSound"
-    android:defaultValue="@string/HeadlightSoundDefault"
-    android:summary="@string/HeadlightSoundSummary"/>
-    
-     <CheckBoxPreference
+    <CheckBoxPreference
     android:title="@string/highBeamSound"
     android:key="pref_highBeamSound"
     android:defaultValue="@string/highBeamSoundDefault"
@@ -114,19 +100,33 @@
     android:defaultValue="@string/highSpeedAlarmSoundDefault"
     android:summary="@string/highSpeedAlarmSoundSummary"/>
     
-   
-    
     <CheckBoxPreference
     android:title="@string/ignitionSound"
     android:key="pref_ignitionSound"
     android:defaultValue="@string/ignitionSoundDefault"
     android:summary="@string/ignitionSoundSummary"/>
   
+    <!--
+    
     <CheckBoxPreference
     android:title="@string/wipersSound"
     android:key="pref_wipersSound"
     android:defaultValue="@string/wipersSoundDefault"
     android:summary="@string/wipersSoundSummary"/>
+    
+     <CheckBoxPreference
+    android:title="@string/HeadlightSound"
+    android:key="pref_HeadlightSound"
+    android:defaultValue="@string/HeadlightSoundDefault"
+    android:summary="@string/HeadlightSoundSummary"/>
+    
+    <CheckBoxPreference
+    android:title="@string/msgSound"
+    android:key="pref_msgSound"
+    android:defaultValue="@string/msgSoundDefault"
+    android:summary="@string/msgSoundSummary"/>
+    
+    -->
     
     <CheckBoxPreference
     android:title="@string/rapidDecelerationSound"
@@ -134,6 +134,45 @@
     android:defaultValue="@string/rapidDecelerationSoundDefault"
     android:summary="@string/rapidDecelerationSoundSummary"/>
     
+    
+    </PreferenceCategory>
+    
+     <PreferenceCategory
+    android:title="@string/accel_and_decel_events"  
+    android:summary="@string/accel_and_decel_events">
+   
+     <CheckBoxPreference
+    android:title="@string/rapidAccelerationEventEnable"
+    android:key="pref_rapidAccelerationEventEnable"
+    android:defaultValue="@string/rapidAccelerationEventEnableDefault"
+    android:summary="@string/rapidAccelerationEventEnableSummary"/>
+     
+    <EditTextPreference
+    android:title="@string/rapidAccelerationEventInterval"
+    android:key="@string/pref_rapidAccelerationEventInterval"
+    android:numeric="integer"
+    android:defaultValue="@string/rapidAccelerationEventIntervalDefault"
+    android:summary="@string/rapidAccelerationEventIntervalSummary"/>
+    
+    <EditTextPreference
+    android:title="@string/rapidAccelerationEventRate"
+    android:key="@string/pref_rapidAccelerationEventRate"
+    android:numeric="integer"
+    android:defaultValue="@string/rapidAccelerationEventRateDefault"
+    android:summary="@string/rapidAccelerationEventRateSummary"/>
+   
+    <EditTextPreference
+    android:title="@string/rapidAccelerationEventText"
+    android:key="@string/pref_rapidAccelerationEventText"
+    android:defaultValue="@string/rapidAccelerationEventTextDefault"
+    android:summary="@string/rapidAccelerationEventTextSummary"/>
+    
+    <EditTextPreference
+    android:title="@string/rapidAccelerationEventMoney"
+    android:key="@string/pref_rapidAccelerationEventMoney"
+    android:numeric="integer"
+    android:defaultValue="@string/rapidAccelerationEventMoneyDefault"
+    android:summary="@string/rapidAccelerationEventMoneySummary"/>
     
     </PreferenceCategory>
     
@@ -155,7 +194,7 @@
      
    
      
-       <EditTextPreference
+    <EditTextPreference
     android:title="@string/rapidBrakeInterval"
     android:key="@string/pref_rapidBrakeInterval"
     android:numeric="integer"
@@ -182,7 +221,11 @@
     android:defaultValue="@string/enableIOIOButtonsDefault"
     android:summary="@string/enableIOIOButtonsSummary"/>
   
-     
+     <CheckBoxPreference
+    android:title="@string/fbombEnable"
+    android:key="pref_fbombEnable"
+    android:defaultValue="@string/fbombEnableDefault"
+    android:summary="@string/fbombEnableSummary"/> 
    
  
     
@@ -207,12 +250,5 @@
     android:key="pref_debugMode"
     android:defaultValue="@string/pref_debugModeDefault"
     android:summary="@string/debugModeSummary"/>  
-   
-    
-    
-  
-      
-    
-    
      
    </PreferenceScreen>

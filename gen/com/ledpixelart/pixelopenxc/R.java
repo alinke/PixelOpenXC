@@ -36,7 +36,7 @@ public final class R {
         public static final int yellowbutton=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f0b001a;
+        public static final int action_settings=0x7f0b001c;
         public static final int brake_status=0x7f0b0002;
         public static final int buttonOne=0x7f0b0010;
         public static final int buttonTwo=0x7f0b0011;
@@ -49,22 +49,24 @@ public final class R {
         public static final int highbeams=0x7f0b000c;
         public static final int ignitionStatus=0x7f0b0007;
         public static final int lights=0x7f0b000a;
-        public static final int menu_about=0x7f0b001c;
-        public static final int menu_instructions=0x7f0b001d;
-        public static final int menu_prefs=0x7f0b001b;
+        public static final int longTapMsg=0x7f0b0018;
+        public static final int menu_about=0x7f0b001e;
+        public static final int menu_instructions=0x7f0b001f;
+        public static final int menu_prefs=0x7f0b001d;
         public static final int odometer=0x7f0b0006;
         public static final int pedal_position=0x7f0b0005;
         public static final int pixel_display=0x7f0b0017;
-        public static final int proxSensor=0x7f0b0019;
-        public static final int steering_wheel=0x7f0b0018;
+        public static final int proxSensor=0x7f0b001b;
+        public static final int steering_wheel=0x7f0b001a;
+        public static final int tableLayout=0x7f0b0000;
         public static final int textView1=0x7f0b0016;
         public static final int thanks_button=0x7f0b0013;
-        public static final int tl=0x7f0b0000;
         public static final int tongue_button=0x7f0b0012;
         public static final int tripCost=0x7f0b0001;
         public static final int tripCostButton=0x7f0b0015;
         public static final int turn_signal=0x7f0b0009;
         public static final int vehicle_speed=0x7f0b0003;
+        public static final int voiceList=0x7f0b0019;
         public static final int wipers=0x7f0b000d;
     }
     public static final class layout {

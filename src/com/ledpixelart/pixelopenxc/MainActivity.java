@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -31,9 +32,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
@@ -113,6 +118,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private TextView tripCostView;
 	private TextView ignitionStatusView;
 	private TextView pixelStatusView;
+	private TextView longTapMsgView;
 	
 
 	//buttonOne
@@ -340,7 +346,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private int _rapidBrakeDisplayTime;
     
     private TextToSpeech tts;
-    private static final int MY_DATA_CHECK_CODE = 1234;
+    private static final int MY_DATA_CHECK_CODE = 8888;
     
     private String gasCostString = null;
 	private String gasConsumedString = null;
@@ -351,6 +357,10 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private String gearString;
 	private String ignitionString;
 	private double odometerValue;
+	
+	private ListView mList;
+	private Button speakButton;
+	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     
     
     @Override
@@ -375,6 +385,22 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 		 _fuButton = (Button) findViewById(R.id.fu_button);
 		 _tongueButton = (Button) findViewById(R.id.tongue_button);
 		 _tripCostButton = (Button) findViewById(R.id.tripCostButton);
+		 
+		 TableLayout buttonLayout = (TableLayout) findViewById(R.id.tableLayout);
+		 mList = (ListView) findViewById(R.id.voiceList);
+		 
+		 buttonLayout.setOnLongClickListener(new OnLongClickListener() {
+
+		     @Override
+		     public boolean onLongClick(View v) {
+		           //Toast.makeText(MainActivity.this, "Long click!", Toast.LENGTH_SHORT).show();
+		           startVoiceRecognitionActivity();
+		           return true;
+		     }
+
+		 });
+		 
+		
         
         //******** preferences code
         resources = this.getResources();
@@ -413,7 +439,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 		mVehicleGearView = (TextView) findViewById(R.id.gear);
 		mVehicleButtonView = (TextView) findViewById(R.id.button_status);
 		proxSensorView = (TextView) findViewById(R.id.proxSensor);
-		
+		longTapMsgView = (TextView) findViewById(R.id.longTapMsg);
 		pixelStatusView = (TextView) findViewById(R.id.pixel_display);
 		
 		
@@ -505,11 +531,19 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
         });
         
-        
-        
-        
-        
 	}
+    
+    public void startVoiceRecognitionActivity() {
+        //we need to stop playing any sound so we don't interfere
+    	mSoundPool.stop(mStream1);
+    	
+    	Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+            "Say Bird, Thanks, or Tongue");
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+    }
     
     private void playThanksAnimation() {
     	 if (thanksPriority >= currentPriority && pixelFound == 1 && button1TimerRunning == 0 ) {						
@@ -1045,7 +1079,46 @@ final Runnable TongueRunnable = new Runnable() {
    @Override
    public void onActivityResult(int reqCode, int resCode, Intent data) //we'll go into a reset after this
    {
-   	super.onActivityResult(reqCode, resCode, data);
+   	
+	   if (reqCode == VOICE_RECOGNITION_REQUEST_CODE && resCode == RESULT_OK) {
+	        // Fill the list view with the strings the recognizer thought it
+	        // could have heard
+	        ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+	        mList.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, matches));
+	        // matches is the result of voice input. It is a list of what the
+	        // user possibly said.
+	        // Using an if statement for the keyword you want to use allows the
+	        // use of any activity if keywords match
+	        // it is possible to set up multiple keywords to use the same
+	        // activity so more than one word will allow the user
+	        // to use the activity (makes it so the user doesn't have to
+	        // memorize words from a list)
+	        // to use an activity from the voice input information simply use
+	        // the following format;
+	        // if (matches.contains("keyword here") { startActivity(new
+	        // Intent("name.of.manifest.ACTIVITY")
+	        
+	        longTapMsgView.setVisibility(View.GONE); //hide the user instructions to make room for the recognized text
+
+	        if (matches.contains("thanks") || matches.contains("thank you") || matches.contains("say thanks") || matches.contains("wave")) {
+	        	playThanksAnimation();
+	        }
+	        else if (matches.contains("f***") || matches.contains("f*** you") || matches.contains("bird") || matches.contains("f*** off")|| matches.contains("what the f***")) {
+	        	playFUAnimation();
+	        }
+	        else if (matches.contains("tongue") || matches.contains("stick out tongue")) {
+	        	playTongueAnimation();
+	        }
+	        
+	        
+	      //  super.onActivityResult(requestCode, resultCode, data);
+	   }
+	   
+	   
+	   
+	   
+	   
+	   super.onActivityResult(reqCode, resCode, data);
    	
    	// if (debug == true) {
    	//	 Toast.makeText(getBaseContext(), "On Activity Result Code: " + reqCode, Toast.LENGTH_LONG).show();
@@ -1093,6 +1166,8 @@ final Runnable TongueRunnable = new Runnable() {
    	
    	
    }
+   
+  
    	
    
    private void setPreferences() //here is where we read the shared preferences into variables
@@ -1968,8 +2043,16 @@ final Runnable TongueRunnable = new Runnable() {
 		            	if (ignitionString != null && ignitionOffPlaying == 0 && ignitionString.equals("OFF")) {  //valid ignition values are: 	ACCESSORY, OFF, RUN, OR START	 
 		            		ignitionOffPlaying = 1;  //only clear this if we go to off state
 		            		ignitionStartPlaying = 0;
-		            		mSoundPool.stop(mStream1);
-	    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERDOWN), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            		
+		            		if (gasCost > .50) {  //if low then the user must have turned on and off without going anywhere
+		            		    tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+        	    	    	    tts.speak("The cost of this trip was $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);    
+		            		} else {
+		            			mSoundPool.stop(mStream1);
+		    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERDOWN), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            		}
+		            		
+		            		
 		            	}
 	            	}
 	            }

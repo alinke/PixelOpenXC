@@ -11,7 +11,7 @@
     <string name="bluetoothPairingString">Please ensure Bluetooth pairing has been completed prior. The Bluetooth pairing code is: 4545."</string> 
     
    <string name="menu_instructions_title">Instructions</string>
-   <string name="setupInstructionsString">Pair your Android device to PIXEL which will show up as \'PIXEL\' in Bluetooth using code 4545.\n\nPhotos taken within this app will display on PIXEL.\n\nClose-up photos with solid backgrounds will produce the best results.\n\nNote the last photo will remain displayed on PIXEL even after your Android device is switched off.</string>
+   <string name="setupInstructionsString">Pair your Android device to PIXEL which will show up as \'PIXEL\' in Bluetooth using code 4545.\n\nThis app utilizes OpenXC hardware to capture driving data, see http://openxcplatform.com for the required external hardware.\n\nLong tap in the top part of the screen to use the voice recognition feature. Say Bird, Thanks, or Tongue to send messages to the PIXEL LED Display</string>
    <string name="setupInstructionsStringTitle">Instructions</string>   
      
     <string name="prefTitle">PIXEL OpenXC Settings</string>
@@ -204,7 +204,7 @@
     <item name="android:textColor">#ffffff</item>
     <item name="android:gravity">center</item>
     <item name="android:layout_margin">3dp</item>
-    <item name="android:textSize">40dp</item>
+    <item name="android:textSize">30dp</item>
     <item name="android:textStyle">bold</item>
     <item name="android:shadowColor">#000000</item>
     <item name="android:shadowDx">1</item>

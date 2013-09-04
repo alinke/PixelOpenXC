@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-<TableLayout android:layout_width="fill_parent" android:id="@+id/tl"
+<TableLayout android:layout_width="fill_parent" android:id="@+id/tableLayout"
     android:layout_height="match_parent"
     >
     
@@ -19,7 +19,7 @@ android:layout_height="fill_parent" >
     
     <View
   android:layout_width="1dp"
-  android:layout_height="15dp">
+  android:layout_height="10dp">
 </View>
     
      <TableRow>
@@ -256,7 +256,7 @@ android:layout_height="fill_parent" >
  
       <View
   android:layout_width="1dp"
-  android:layout_height="15dp">
+  android:layout_height="10dp">
 	</View>
 
        <Button
@@ -307,7 +307,7 @@ android:layout_height="fill_parent" >
 
     <View
   android:layout_width="1dp"
-  android:layout_height="15dp">
+  android:layout_height="10dp">
 </View>
          
          <TextView
@@ -327,6 +327,19 @@ android:layout_height="fill_parent" >
         android:textColor="#0099CC"/>
     
     </TableRow>
+    <TextView
+        android:id="@+id/longTapMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="LONG TAP ABOVE BUTTONS FOR VOICE RECOGNITION" 
+        android:textColor="#669900"/>
+     <ListView
+         android:id="@+id/voiceList"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content" 
+      >
+     </ListView>
 
     </TableLayout>
     </RelativeLayout>

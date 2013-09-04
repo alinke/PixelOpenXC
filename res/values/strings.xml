@@ -22,8 +22,8 @@
     <string name="notFoundString">PIXEL Not Found</string>   
    
     <string name="selected_matrix">selected_matrix</string>
-    <string name="matrix">LED Panel Selection</string>
-    <string name="matrixSummary">Select your LED Panel Model</string>    
+    <string name="matrix">LED Panel Model</string>
+    <string name="matrixSummary"></string>    
     <string name="dialogTitleMatrix">LED Panel Selection</string>
     <string name="matrix_default_value">3</string>   
     
@@ -84,7 +84,7 @@
     <string name="highSpeedAlarmSoundDefault">true</string>    
     <string name="highSpeedAlarmSoundSummary"></string>
     
-    <string name="highSpeedSMSTextNumber">Phone Number</string>    
+    <string name="highSpeedSMSTextNumber">Phone Number for SMS Text</string>    
     <string name="pref_highSpeedSMSTextNumber">pref_highSpeedSMSTextNumber</string>
     <string name="highSpeedSMSTextNumberDefault">4088921718</string>    
     <string name="highSpeedSMSTextNumberSummary"></string>
@@ -109,7 +109,7 @@
     <string name="rapidDecelerationSoundDefault">true</string>    
     <string name="rapidDecelerationSoundSummary">Danger Will Robinson soundbyte</string>
     
-    <string name="enableIOIOButtons">Enable Physical Message Buttons</string>    
+    <string name="enableIOIOButtons">Physical Message Buttons</string>    
     <string name="pref_enableIOIOButtons">pref_enableIOIOButtons</string>
     <string name="enableIOIOButtonsDefault">false</string>    
     <string name="enableIOIOButtonsSummary">Plug physical buttons into the PIXEL board digital ports</string>
@@ -179,7 +179,7 @@
    <string name="rapidAccelerationEventMoneyDefault">.10</string>
    <string name="rapidAccelerationEventMoneySummary">The event will trigger if the cost is higher than this</string>
    
-   <string name="fbombEnable">Enable F-Bomb</string>    
+   <string name="fbombEnable">F-Bomb Button</string>    
    <string name="pref_fbombEnable">pref_fbombEnable</string>
    <string name="fbombEnableDefault">false</string>
    <string name="fbombEnableSummary">Enables the F-bomb PIXEL LED display animation</string>
@@ -191,6 +191,20 @@
     <item name="android:gravity">center</item>
     <item name="android:layout_margin">3dp</item>
     <item name="android:textSize">30dp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:shadowColor">#000000</item>
+    <item name="android:shadowDx">1</item>
+    <item name="android:shadowDy">1</item>
+    <item name="android:shadowRadius">2</item>
+</style>
+
+    <style name="BigText">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textColor">#ffffff</item>
+    <item name="android:gravity">center</item>
+    <item name="android:layout_margin">3dp</item>
+    <item name="android:textSize">40dp</item>
     <item name="android:textStyle">bold</item>
     <item name="android:shadowColor">#000000</item>
     <item name="android:shadowDx">1</item>

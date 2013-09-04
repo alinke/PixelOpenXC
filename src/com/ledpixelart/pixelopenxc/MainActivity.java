@@ -112,6 +112,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private TextView button2View;
 	private TextView tripCostView;
 	private TextView ignitionStatusView;
+	private TextView pixelStatusView;
+	
+
 	//buttonOne
 
 	
@@ -410,6 +413,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 		mVehicleGearView = (TextView) findViewById(R.id.gear);
 		mVehicleButtonView = (TextView) findViewById(R.id.button_status);
 		proxSensorView = (TextView) findViewById(R.id.proxSensor);
+		
+		pixelStatusView = (TextView) findViewById(R.id.pixel_display);
+		
 		
 		button1View = (TextView) findViewById(R.id.buttonOne);
 		button2View = (TextView) findViewById(R.id.buttonTwo);
@@ -1340,6 +1346,8 @@ final Runnable TongueRunnable = new Runnable() {
  			
  			pixelFound = 1; //if we went here, then we are connected over bluetooth or USB
  			
+ 			updatePIXELStatus("Connected");
+ 			
  			//prox_ = ioio_.openAnalogInput(proxPinNumber);
  			
  			if (_enableIOIOButtons == true) {
@@ -1446,6 +1454,8 @@ final Runnable TongueRunnable = new Runnable() {
 			if (debug_ == true) {  			
 	  			showToast("Bluetooth Disconnected");
  			}
+			
+			updatePIXELStatus("Connection Lost");
 		}
 
 		@Override
@@ -1485,6 +1495,14 @@ final Runnable TongueRunnable = new Runnable() {
 		runOnUiThread(new Runnable() {
 			public void run() {
 				button2View.setText(str);
+			}
+		});
+	}
+	
+	private void updatePIXELStatus(final String str) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				pixelStatusView.setText(str);
 			}
 		});
 	}
@@ -1723,8 +1741,8 @@ final Runnable TongueRunnable = new Runnable() {
 	            	String speedString = String.format("%.1f", speed);	
 	               //mVehicleSpeedView.setText(
 	                   // "Vehicle speed (mp/h): " + _speed.getValue().doubleValue());
-	            	 mVehicleSpeedView.setText(
-	                    "Speed (mp/h): " + speedString);
+	            	 mVehicleSpeedView.setText(speedString);
+	                   
 	            	 
 	            	 
 	            	if (_highSpeedAlarmSound == true) { //play a sound if user going too fast
@@ -1909,8 +1927,18 @@ final Runnable TongueRunnable = new Runnable() {
 	    	final WindshieldWiperStatus _wipers = (WindshieldWiperStatus) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
-	            	mVehicleWipersView.setText(
-	            	 	"Wipers: " + _wipers.getValue().booleanValue());
+	            	
+	            	boolean wiperBoolean = _wipers.getValue().booleanValue();
+	            	String wiperText;
+	            	if (wiperBoolean == true) {
+	            		wiperText = "On";
+	            	}
+	            	else {
+	            		wiperText = "Off";
+	            	}
+	            	
+	            	mVehicleWipersView.setText(wiperText);
+	            	
 	            	//boolean breakValue = _brakeStatus.getValue().booleanValue();
 	            }
 	        });
@@ -1926,8 +1954,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            	ignitionString = _ignition.getValue().toString();
 	            	ignitionString = getValueString(ignitionString);
 	            	
-	            	ignitionStatusView.setText(
-	            	 	"Ignition: " + ignitionString);
+	            	ignitionStatusView.setText(ignitionString);
 	            
 	            	if (_ignitionSound == true) {
 	            	
@@ -1959,9 +1986,20 @@ final Runnable TongueRunnable = new Runnable() {
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
 	            	
-	            	mVehicleBrakeView.setText(
-	                    //"Brake Status: " + _brakeStatus.getValue().doubleValue());
-	            	 	"Brake: " + _brakeStatus.getValue().booleanValue());
+	            	boolean brakesBoolean = _brakeStatus.getValue().booleanValue();
+	            	String brakesText;
+	            	if (brakesBoolean == true) {
+	            		brakesText = "On";
+	            	}
+	            	else {
+	            		brakesText = "Off";
+	            	}
+	            	
+	            	mVehicleBrakeView.setText(brakesText);
+	            	
+	            	
+	            	//mVehicleBrakeView.setText(
+	            	// 	"Brake: " + _brakeStatus.getValue().booleanValue());
 	            	
 	            	//Log.w("openxc", "current priority " + currentPriority); 
 	            	
@@ -2033,7 +2071,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            	
 	            	double pedealValue = _pedal.getValue().doubleValue(); 
 	            	String pedalString = String.format("%.1f", pedealValue);	
-	            	mVehiclePedalView.setText("Gas Pedal: " + pedalString);
+	            	mVehiclePedalView.setText(pedalString);
 	            	
 	            	if (pedalPriority >= currentPriority && pixelFound == 1) { //but don't do anything unless it has display priority AND PIXEL HAS BEEN FOUND
 		            	
@@ -2166,6 +2204,8 @@ final Runnable TongueRunnable = new Runnable() {
 	    	final TurnSignalStatus _turnSignal = (TurnSignalStatus) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
+	            	
+	            	
 	            	mVehicleTurnSignalView.setText(
 	            	 	"Turn Signal: " + _turnSignal.getValue());
 	            	
@@ -2226,8 +2266,7 @@ final Runnable TongueRunnable = new Runnable() {
 	                gasCostString = String.format("%.2f", gasCost);
 	                gasConsumedString = String.format("%.2f", gasConsumed);
 	            	
-	            	mVehicleFuelConsumedView.setText(
-		            	 	"Trip Fuel: " + gasConsumedString);
+	            	mVehicleFuelConsumedView.setText(gasConsumedString);
 	           
 	            	tripCostView.setText("Trip Cost: $" + gasCostString);
 	            	
@@ -2293,7 +2332,21 @@ final Runnable TongueRunnable = new Runnable() {
 		    	final HeadlampStatus _headLamp = (HeadlampStatus) measurement;
 		        MainActivity.this.runOnUiThread(new Runnable() {
 		            public void run() {
-		            	mVehicleLightsView.setText("Lights: " + _headLamp.getValue().booleanValue());
+		            	
+		            	boolean lightsBoolean = _headLamp.getValue().booleanValue();
+		            	String lightsText;
+		            	if (lightsBoolean == true) {
+		            		lightsText = "On";
+		            	}
+		            	else {
+		            		lightsText = "Off";
+		            	}
+		            	
+		            	mVehicleLightsView.setText(lightsText);
+		            	
+		            	
+		            	
+		            	//mVehicleLightsView.setText("Lights: " + _headLamp.getValue().booleanValue());
 		            	
 		            	 if (_highBeamSound == true) {
 			            		
@@ -2325,7 +2378,19 @@ final Runnable TongueRunnable = new Runnable() {
 		    	final HighBeamStatus _headBeam = (HighBeamStatus) measurement;
 		        MainActivity.this.runOnUiThread(new Runnable() {
 		            public void run() {
-		            	mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue().booleanValue());
+		            	
+		            	boolean highbeamBoolean = _headBeam.getValue().booleanValue();
+		            	String highbeamText;
+		            	if (highbeamBoolean == true) {
+		            		highbeamText = "On";
+		            	}
+		            	else {
+		            		highbeamText = "Off";
+		            	}
+		            	
+		            	mVehicleHighBeamsView.setText(highbeamText);
+		            	
+		            	//mVehicleHighBeamsView.setText("High Beams: " + _headBeam.getValue().booleanValue());
 		            	
 		            if (_highBeamSound == true) {
 		            		
@@ -2364,8 +2429,7 @@ final Runnable TongueRunnable = new Runnable() {
 	        	String odometerString = String.format("%.0f", odometerValue2);
 	        	
 	            public void run() {
-	            	mVehicleOdometerView.setText(
-	            	 	"Odometer: " + odometerString);
+	            	mVehicleOdometerView.setText(odometerString);
 	            }
 	        });
 	    }
@@ -2392,8 +2456,7 @@ final Runnable TongueRunnable = new Runnable() {
 	         
 	            	gearString = _gear.getValue().toString();
 	            	gearString = getValueString(gearString);
-	            	mVehicleGearView.setText(
-	            	"Gear: " + gearString);
+	            	mVehicleGearView.setText(gearString);
 	            	
 	            	int gearNumber = 0;
 	            	//int[] gearArray = new int[120];

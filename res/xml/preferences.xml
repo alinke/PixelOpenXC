@@ -180,11 +180,13 @@
     android:title="@string/PIXELSettings"  
     android:summary="@string/PIXELSettings">
     
-    <CheckBoxPreference
+   
+      <!--    
+     <CheckBoxPreference
     android:title="@string/enablePIXEL"
     android:key="pref_enablePIXEL"
     android:defaultValue="@string/enablePIXELDefault"
-    android:summary="@string/enablePIXELSummary"/>
+    android:summary="@string/enablePIXELSummary"/>-->
     
      <CheckBoxPreference
     android:title="@string/enablePedal"

@@ -541,7 +541,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-            "Say Bird, Thanks, or Tongue");
+            "Say \'Bird\', \'Thanks\', or \'Tongue\'");
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
     
@@ -1109,14 +1109,8 @@ final Runnable TongueRunnable = new Runnable() {
 	        else if (matches.contains("tongue") || matches.contains("stick out tongue")) {
 	        	playTongueAnimation();
 	        }
-	        
-	        
-	      //  super.onActivityResult(requestCode, resultCode, data);
 	   }
-	   
-	   
-	   
-	   
+	   //add error handler here if voice not supported
 	   
 	   super.onActivityResult(reqCode, resCode, data);
    	

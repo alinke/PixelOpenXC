@@ -218,6 +218,16 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private int[] gearArray = new int[1000];
     private double[] speedArray = new double[1000];
     private double[] fuelConsumedArray = new double[1000];
+    private double odometerValue = 0;
+    private double odometerTripStart = 0;
+    private double[] odometerArray= new double[1000];
+    private int o = 0;
+    private double tripMileage;
+    private boolean odometerData = true;
+    private double mpg;
+    private String mpgString;
+    private double gasConsumedStart = 0;
+    private int r = 0;
     
     private boolean rapidAccerlationEnded = false;
     private double accerlationEventCost = 0;
@@ -356,7 +366,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private String _highSpeedSMSTextNumber;
 	private String gearString;
 	private String ignitionString;
-	private double odometerValue;
+	//private double odometerValue;
 	
 	private ListView mList;
 	private Button speakButton;
@@ -502,6 +512,17 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
       
        // mStream2= mSoundPool.play(mSoundPoolMap.get(JETSONS_RUNNING), streamVolume, streamVolume, 1, LOOP_3_TIMES, 1f);
         
+        _thanksButton.setOnLongClickListener(new OnLongClickListener() {
+
+		     @Override
+		     public boolean onLongClick(View v) {
+		           //Toast.makeText(MainActivity.this, "Long click!", Toast.LENGTH_SHORT).show();
+		           startVoiceRecognitionActivity();
+		           return true;
+		     }
+
+		 });
+        
         
         _thanksButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -510,6 +531,17 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
         });
         
+        _fuButton.setOnLongClickListener(new OnLongClickListener() {
+
+		     @Override
+		     public boolean onLongClick(View v) {
+		           //Toast.makeText(MainActivity.this, "Long click!", Toast.LENGTH_SHORT).show();
+		           startVoiceRecognitionActivity();
+		           return true;
+		     }
+
+		 });
+        
         _fuButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -517,12 +549,32 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 			}
         });
         
+        _tongueButton.setOnLongClickListener(new OnLongClickListener() {
+
+		     @Override
+		     public boolean onLongClick(View v) {
+		           //Toast.makeText(MainActivity.this, "Long click!", Toast.LENGTH_SHORT).show();
+		           startVoiceRecognitionActivity();
+		           return true;
+		     }
+		 });
+        
         _tongueButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				playTongueAnimation();
 			}
         });
+        
+        _tripCostButton.setOnLongClickListener(new OnLongClickListener() {
+
+		     @Override
+		     public boolean onLongClick(View v) {
+		           //Toast.makeText(MainActivity.this, "Long click!", Toast.LENGTH_SHORT).show();
+		           startVoiceRecognitionActivity();
+		           return true;
+		     }
+		 });
         
         _tripCostButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -541,7 +593,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-            "Say \'Bird\', \'Thanks\', or \'Tongue\'");
+            "Say \'Bird\', \'Thanks\', \'Tongue\' or \'Trip\'");
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
     
@@ -1109,6 +1161,9 @@ final Runnable TongueRunnable = new Runnable() {
 	        else if (matches.contains("tongue") || matches.contains("stick out tongue")) {
 	        	playTongueAnimation();
 	        }
+	        else if (matches.contains("trip") || matches.contains("cost") || matches.contains("miles per gallon")) {
+	        	speakTripCost();
+	        }
 	   }
 	   //add error handler here if voice not supported
 	   
@@ -1160,6 +1215,8 @@ final Runnable TongueRunnable = new Runnable() {
    	
    	
    }
+   
+  
    
   
    	
@@ -1821,7 +1878,6 @@ final Runnable TongueRunnable = new Runnable() {
 		            		 if (highSpeedRunningFlag == false) {
 		            			 i = 0;
 		            			 highSpeedRunningFlag = true;
-		            			 	
 		            			 
 		            			 	_highSpeedTimer = new Timer();
 		            		 		_highSpeedTimer.schedule(new TimerTask() {
@@ -2032,6 +2088,10 @@ final Runnable TongueRunnable = new Runnable() {
 		            		ignitionOffPlaying = 0;
 		            		mSoundPool.stop(mStream1);
 	    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERUP2), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+	    	    	   		
+	    	    	   		if (odometerValue != 0) {
+	    	    	   			odometerTripStart = odometerValue;  //we'll use for calculating mpg
+	    	    	   		}
 		            	}
 		            	
 		            	if (ignitionString != null && ignitionOffPlaying == 0 && ignitionString.equals("OFF")) {  //valid ignition values are: 	ACCESSORY, OFF, RUN, OR START	 
@@ -2045,6 +2105,8 @@ final Runnable TongueRunnable = new Runnable() {
 		            			mSoundPool.stop(mStream1);
 		    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERDOWN), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
 		            		}
+		            		
+		            		tripMileage = odometerValue - odometerTripStart;
 		            		
 		            		
 		            	}
@@ -2338,6 +2400,9 @@ final Runnable TongueRunnable = new Runnable() {
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
 	            	
+	            	
+	            	
+	            	
 	            	gasConsumed = _fullConsumed.getValue().doubleValue();
 	            	gasCost = gasConsumed * _gasGallonCost;
 	                gasCostString = String.format("%.2f", gasCost);
@@ -2346,6 +2411,11 @@ final Runnable TongueRunnable = new Runnable() {
 	            	mVehicleFuelConsumedView.setText(gasConsumedString);
 	           
 	            	tripCostView.setText("Trip Cost: $" + gasCostString);
+	            	
+	            	if (r == 0) {  //let's get the baseline
+	            		gasConsumedStart = gasConsumed;
+	            	}
+	            	r++;
 	            	
 	            	if (_gasConsumedSound == true) {	
 	            	
@@ -2393,14 +2463,44 @@ final Runnable TongueRunnable = new Runnable() {
     private void speakTripCost () {
 	   		
 	   		if (gasCostString != null) {
-	    		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
-		    	tts.speak("The cost of this trip was $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);   
+	   	
+		   		tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		   		
+		   		if (odometerValue != 0 && odometerTripStart != 0) {
+		   			tripMileage = odometerValue - odometerTripStart;
+		   			
+		   		}
+		   		else {
+		   			 odometerData = false;
+		   		}
+		   		
+		   		if (odometerData == false) {
+		   			tts.speak("Trip cost is $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);
+		   		}
+		   		else {
+		   			
+		   			Log.w("openxc", "end gas consumed " + gasConsumed);
+		   			Log.w("openxc", "starting gas consumed " + gasConsumedStart);
+		   			
+		   			Log.w("openxc", "odometer end " + odometerValue);
+		   			Log.w("openxc", "odometer start " + odometerTripStart);
+		   			
+		   			
+		   			mpg = (odometerValue - odometerTripStart) / (gasConsumed - gasConsumedStart);
+		   			mpgString = String.format("%.1f", mpg);
+		   			
+		   			if (mpg < 1) { //then we have bad data due to the way the openXC enabler handles the gas consumed so just speak the gas cost and not mph
+		   				tts.speak("Trip cost is $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);
+		   			}
+		   			else {
+		   				tts.speak("Trip cost is $" + gasCostString + " with a miles per gallon of " + mpgString, TextToSpeech.QUEUE_FLUSH, null);
+		   			}
+		   		}
 	   		}
 	   		else {
 	   			tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
 		    	tts.speak("Gas consumed data is not available", TextToSpeech.QUEUE_FLUSH, null);   
 	   		}
-		
     }
 	
 	
@@ -2501,12 +2601,21 @@ final Runnable TongueRunnable = new Runnable() {
 	    public void receive(Measurement measurement) {
 	    	final Odometer _odometer = (Odometer) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
-	         	
-	        	double odometerValue2 = _odometer.getValue().doubleValue();
-	        	String odometerString = String.format("%.0f", odometerValue2);
+	        	
 	        	
 	            public void run() {
+	            	
+	            	//double odometerValue = _odometer.getValue().doubleValue();
+		        	odometerValue = _odometer.getValue().doubleValue();
+		        	String odometerString = String.format("%.0f", odometerValue);
 	            	mVehicleOdometerView.setText(odometerString);
+	            	
+	            	if (o == 0) {  //then start of trip so let's take it as the odometer baseline
+	    	   			odometerTripStart = odometerValue;  //we'll use for calculating mpg
+	            	}
+	            	o++;
+	            	
+	            	
 	            }
 	        });
 	    }

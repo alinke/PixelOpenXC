@@ -1,12 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_horizontal" >
 
-<TableLayout android:layout_width="fill_parent" android:id="@+id/tableLayout"
+<TableLayout
+    android:id="@+id/tableLayout"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    >
-    
+    android:orientation="horizontal" >
    
     <TextView
         android:id="@+id/tripCost"
@@ -327,18 +329,24 @@
         android:textColor="#0099CC"/>
     
     </TableRow>
+    
     <TextView
         android:id="@+id/longTapMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="LONG TAP ABOVE BUTTONS FOR VOICE RECOGNITION" 
+        android:gravity="center"
+        android:text="LONG TAP FOR VOICE RECOGNITION" 
         android:textColor="#669900"/>
+      
+ 
      <ListView
          android:id="@+id/voiceList"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content" 
-      >
+         android:layout_centerInParent="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+  
+         
      </ListView>
 
     </TableLayout>

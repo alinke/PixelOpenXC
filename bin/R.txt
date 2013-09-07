@@ -311,6 +311,7 @@ int string pref_rapidBrakeDisplayTime 0x7f060082
 int string pref_rapidBrakeInterval 0x7f06007a
 int string pref_rapidBrakeRate 0x7f06007e
 int string pref_rapidDecelerationSound 0x7f06005e
+int string pref_userName 0x7f06009e
 int string pref_wipersSound 0x7f060056
 int string rapidAccelerationEventEnable 0x7f060085
 int string rapidAccelerationEventEnableDefault 0x7f060087
@@ -349,6 +350,9 @@ int string trace_source_checkbox_key 0x7f06000b
 int string trace_source_file_key 0x7f06000c
 int string uploading_checkbox_key 0x7f060004
 int string uploading_path_key 0x7f060005
+int string userName 0x7f06009d
+int string userNameDefault 0x7f06009f
+int string userNameSummary 0x7f0600a0
 int string versionString 0x7f060011
 int string wipersSound 0x7f060055
 int string wipersSoundDefault 0x7f060057

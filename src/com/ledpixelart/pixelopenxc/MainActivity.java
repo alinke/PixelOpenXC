@@ -297,6 +297,8 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     final static int LOOP_1_TIME = 0;
     final static int LOOP_3_TIMES = 2;
     
+    private String _userName;
+    
   //  final static int ACCEL1 = 1;
   //  final static int ACCEL2 = 2;
   //  final static int ACCEL3 = 3;
@@ -1300,9 +1302,11 @@ final Runnable TongueRunnable = new Runnable() {
      _rapidAccelerationEventMoney = Float.valueOf(prefs.getString(   
   	        resources.getString(R.string.pref_rapidAccelerationEventMoney),
   	        resources.getString(R.string.rapidAccelerationEventMoneyDefault))); 
-   
      
-    
+     
+     _userName = prefs.getString(   
+   	        resources.getString(R.string.pref_userName),
+   	        resources.getString(R.string.userNameDefault)); 
     
     
     switch (matrix_model) {  //the user can use other LED displays other than PIXEL's by choosing from preferences

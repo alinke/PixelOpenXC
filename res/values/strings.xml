@@ -183,6 +183,11 @@
    <string name="pref_fbombEnable">pref_fbombEnable</string>
    <string name="fbombEnableDefault">false</string>
    <string name="fbombEnableSummary">Enables the F-bomb PIXEL LED display animation</string>
+   
+    <string name="userName">Al</string>    
+   <string name="pref_userName">pref_userName</string>
+   <string name="userNameDefault">Al</string>
+   <string name="userNameSummary">For the welcome greeting</string>
           
    <style name="ButtonText">
     <item name="android:layout_width">fill_parent</item>

@@ -32,6 +32,15 @@
    android:numeric="integer"
    android:defaultValue="@string/highSpeedSMSThresholdDefault"
    android:summary="@string/highSpeedSMSThresholdSummary"/>
+     
+   <EditTextPreference
+   android:title="@string/userName"
+   android:key="@string/pref_userName"
+   android:numeric="integer"
+   android:defaultValue="@string/userNameDefault"
+   android:summary="@string/userNameSummary"/>
+     
+     
     
     <CheckBoxPreference
     android:title="@string/highSpeedSMS"

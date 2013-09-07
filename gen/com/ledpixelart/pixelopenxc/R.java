@@ -344,6 +344,7 @@ public final class R {
         public static final int pref_rapidBrakeInterval=0x7f06007a;
         public static final int pref_rapidBrakeRate=0x7f06007e;
         public static final int pref_rapidDecelerationSound=0x7f06005e;
+        public static final int pref_userName=0x7f06009e;
         public static final int pref_wipersSound=0x7f060056;
         public static final int rapidAccelerationEventEnable=0x7f060085;
         public static final int rapidAccelerationEventEnableDefault=0x7f060087;
@@ -382,6 +383,9 @@ public final class R {
         public static final int trace_source_file_key=0x7f06000c;
         public static final int uploading_checkbox_key=0x7f060004;
         public static final int uploading_path_key=0x7f060005;
+        public static final int userName=0x7f06009d;
+        public static final int userNameDefault=0x7f06009f;
+        public static final int userNameSummary=0x7f0600a0;
         public static final int versionString=0x7f060011;
         public static final int wipersSound=0x7f060055;
         public static final int wipersSoundDefault=0x7f060057;

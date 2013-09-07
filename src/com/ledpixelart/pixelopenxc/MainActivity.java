@@ -50,6 +50,10 @@ import alt.android.os.CountDownTimer;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
 
+import com.openxc.measurements.BeepRequest;
+import com.openxc.measurements.CruiseControl;
+import com.openxc.measurements.DoorLocks;
+import com.openxc.measurements.EngineMode;
 import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleButtonEvent;
@@ -373,6 +377,14 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private ListView mList;
 	private Button speakButton;
 	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+	protected static final String TAG = "openxc";
+	
+	private CruiseControl cmd = new CruiseControl(CruiseControl.CruiseCommands.SET);
+    private EngineMode electricCommand = new EngineMode(EngineMode.EngineModes.EV_DRIVING);
+    private EngineMode gasCommand = new EngineMode(EngineMode.EngineModes.CHARGE_SUSTAINING_ENGINE_ON);
+   // private BeepRequest beepCommand = new BeepRequest(BeepRequest.true);
+    private DoorLocks lockDoorsCommand = new DoorLocks (DoorLocks.LockCommands.LOCK_ALL);
+    private DoorLocks unlockDoorsCommand = new DoorLocks (DoorLocks.LockCommands.LOCK_ALL);
     
     
     @Override
@@ -1166,6 +1178,42 @@ final Runnable TongueRunnable = new Runnable() {
 	        else if (matches.contains("trip") || matches.contains("cost") || matches.contains("miles per gallon")) {
 	        	speakTripCost();
 	        }
+	        else if (matches.contains("gas")) {
+	        	 try {
+	 		        mVehicleManager.send(gasCommand);
+	 		    } catch(UnrecognizedMeasurementTypeException e) {
+	 		        Log.w(TAG, "Unable to send cruise command", e);
+	 		    }
+	        }
+	        else if (matches.contains("electric")) {
+	        	 try {
+	 		        mVehicleManager.send(electricCommand);
+	 		    } catch(UnrecognizedMeasurementTypeException e) {
+	 		        Log.w(TAG, "Unable to send cruise command", e);
+	 		    }
+	        }
+	        else if (matches.contains("lock")) {
+	        	 try {
+	 		        mVehicleManager.send(lockDoorsCommand);
+	 		    } catch(UnrecognizedMeasurementTypeException e) {
+	 		        Log.w(TAG, "Unable to send cruise command", e);
+	 		    }
+	        }
+	        else if (matches.contains("unlock")) {
+	        	 try {
+	 		        mVehicleManager.send(unlockDoorsCommand);
+	 		    } catch(UnrecognizedMeasurementTypeException e) {
+	 		        Log.w(TAG, "Unable to send cruise command", e);
+	 		    }
+	        }
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
 	   }
 	   //add error handler here if voice not supported
 	   
@@ -1850,6 +1898,14 @@ final Runnable TongueRunnable = new Runnable() {
 			} catch (UnrecognizedMeasurementTypeException e) {
 				e.printStackTrace();
 			}
+	        
+	        
+	       // CruiseControl cmd = new CruiseControl(CruiseControl.CruiseCommands.SET);
+	       // EngineMode electricCommand = new EngineMode(EngineMode.EngineModes.EV_DRIVING);
+		    
+		   
+	        
+	        
         }
 	   
  
@@ -1858,6 +1914,11 @@ final Runnable TongueRunnable = new Runnable() {
 	        Log.w("openxc", "VehicleService disconnected unexpectedly");
 	        mVehicleManager = null;
 	    }
+	    
+	    
+	    
+	  
+	    
 	};
  
 

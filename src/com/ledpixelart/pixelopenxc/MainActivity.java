@@ -50,10 +50,13 @@ import alt.android.os.CountDownTimer;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
 
+import com.openxc.measurements.BatteryLevel;
 import com.openxc.measurements.BeepRequest;
+import com.openxc.measurements.ClimateTemperature;
 import com.openxc.measurements.CruiseControl;
 import com.openxc.measurements.DoorLocks;
 import com.openxc.measurements.EngineMode;
+import com.openxc.measurements.GearLeverPosition;
 import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleButtonEvent;
@@ -123,6 +126,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private TextView ignitionStatusView;
 	private TextView pixelStatusView;
 	private TextView longTapMsgView;
+	private TextView mVehicleBatteryView;
 	
 
 	//buttonOne
@@ -197,6 +201,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private int tonguePriority = 7;
     private int thanksPriority = 8;
     private int proxPriority = 9;
+    private int twitterPriority = 10;
+    
+    
     private int rapidBrakePriority = 10;
     private int currentPriority = 0;
     
@@ -219,6 +226,8 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
   //  private int lastGear = 0;
   //  private int currentGear = 0;
     
+    private boolean _textToSpeechflag = false;
+    
     private int[] gearArray = new int[1000];
     private double[] speedArray = new double[1000];
     private double[] fuelConsumedArray = new double[1000];
@@ -235,6 +244,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     
     private boolean rapidAccerlationEnded = false;
     private double accerlationEventCost = 0;
+    private boolean setClimate;
     
     private float _gasGallonCost;
     
@@ -333,6 +343,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     final static int ALERT = 27;
     final static int POWERDOWN = 28;
     private static int HIGHBEAM_OFF = 29;
+    private static int COMPUTER_THINKING = 30;
     
     private float  streamVolume;
     
@@ -385,6 +396,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
    // private BeepRequest beepCommand = new BeepRequest(BeepRequest.true);
     private DoorLocks lockDoorsCommand = new DoorLocks (DoorLocks.LockCommands.LOCK_ALL);
     private DoorLocks unlockDoorsCommand = new DoorLocks (DoorLocks.LockCommands.LOCK_ALL);
+    private int _climateTemperature = 65;  //14.5 to 30 celcius , 58 to 86 are valid in F
+    private int _climateTemperatureCelcius;
+    private ClimateTemperature climateCommand = new ClimateTemperature(_climateTemperature);
     
     
     @Override
@@ -406,9 +420,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
         }
         
         _thanksButton = (Button) findViewById(R.id.thanks_button);
-		 _fuButton = (Button) findViewById(R.id.fu_button);
-		 _tongueButton = (Button) findViewById(R.id.tongue_button);
-		 _tripCostButton = (Button) findViewById(R.id.tripCostButton);
+		_fuButton = (Button) findViewById(R.id.fu_button);
+		_tongueButton = (Button) findViewById(R.id.tongue_button);
+		_tripCostButton = (Button) findViewById(R.id.tripCostButton);
 		 
 		 TableLayout buttonLayout = (TableLayout) findViewById(R.id.tableLayout);
 		 mList = (ListView) findViewById(R.id.voiceList);
@@ -462,6 +476,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 		mVehicleDoorView = (TextView) findViewById(R.id.door);
 		mVehicleGearView = (TextView) findViewById(R.id.gear);
 		mVehicleButtonView = (TextView) findViewById(R.id.button_status);
+		
+		mVehicleBatteryView = (TextView) findViewById(R.id.buttonOne);
+		
 		proxSensorView = (TextView) findViewById(R.id.proxSensor);
 		longTapMsgView = (TextView) findViewById(R.id.longTapMsg);
 		pixelStatusView = (TextView) findViewById(R.id.pixel_display);
@@ -516,6 +533,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
         mSoundPoolMap.put(RAYGUN, mSoundPool.load(this, R.raw.raygun, 1));
         mSoundPoolMap.put(ALERT, mSoundPool.load(this, R.raw.alert, 1));
         mSoundPoolMap.put(POWERDOWN, mSoundPool.load(this, R.raw.powerdown, 1));
+        mSoundPoolMap.put(COMPUTER_THINKING, mSoundPool.load(this, R.raw.computer, 1));
         
     	streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         streamVolume = streamVolume / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -596,6 +614,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 				speakTripCost();
 			}
         });
+        
         
 	}
     
@@ -1178,14 +1197,14 @@ final Runnable TongueRunnable = new Runnable() {
 	        else if (matches.contains("trip") || matches.contains("cost") || matches.contains("miles per gallon")) {
 	        	speakTripCost();
 	        }
-	        else if (matches.contains("gas")) {
+	        else if (matches.contains("gas") || matches.contains("gasoline") || matches.contains("petrol")) {
 	        	 try {
 	 		        mVehicleManager.send(gasCommand);
 	 		    } catch(UnrecognizedMeasurementTypeException e) {
 	 		        Log.w(TAG, "Unable to send cruise command", e);
 	 		    }
 	        }
-	        else if (matches.contains("electric")) {
+	        else if (matches.contains("electric") || matches.contains("electrical")) {
 	        	 try {
 	 		        mVehicleManager.send(electricCommand);
 	 		    } catch(UnrecognizedMeasurementTypeException e) {
@@ -1239,7 +1258,11 @@ final Runnable TongueRunnable = new Runnable() {
 	                int duration = Toast.LENGTH_SHORT;
 	                Toast toast = Toast.makeText(context, text, duration);
 	                toast.show();
-               }                
+               }   
+               
+             //  tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		//   dsdfsdfd    tts.speak("Welcome " + _userName, TextToSpeech.QUEUE_FLUSH, null);   
+           //	tts.speak("Trip cost is $", TextToSpeech.QUEUE_FLUSH, null);
            }
            else
            {
@@ -1320,6 +1343,18 @@ final Runnable TongueRunnable = new Runnable() {
      matrix_model = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
    	        resources.getString(R.string.selected_matrix),
    	        resources.getString(R.string.matrix_default_value))); 
+     
+     _climateTemperature = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
+    	        resources.getString(R.string.pref_climateTemperature),
+    	        resources.getString(R.string.climateTemperatureNumberDefault))); 
+     
+     //now let's convert to Celcius
+     
+     _climateTemperatureCelcius = (_climateTemperature - 32) * 5/9;  //need to convert F to C
+    		 // formula is (F  -  32)  x  5/9 = C
+     
+     climateCommand = new ClimateTemperature(_climateTemperatureCelcius);
+   
      
      _gasTickSoundInterval = Float.valueOf(prefs.getString(  
     	        resources.getString(R.string.pref_gasTickSoundInterval),
@@ -1813,6 +1848,16 @@ final Runnable TongueRunnable = new Runnable() {
 				} catch (UnrecognizedMeasurementTypeException e) {
 					e.printStackTrace();
 				}
+		       
+		       try {
+					mVehicleManager.addListener(BatteryLevel.class, mButtonBatteryLevelListener);
+				} catch (VehicleServiceException e) {
+					e.printStackTrace();
+				} catch (UnrecognizedMeasurementTypeException e) {
+					e.printStackTrace();
+				}
+		       
+		      
 	      
 	        
 	        
@@ -1891,19 +1936,54 @@ final Runnable TongueRunnable = new Runnable() {
 	//		}
 	        
 	  
+	    //    try {
+		//		mVehicleManager.addListener(TransmissionGearPosition.class, mGearListener);
+	//		} catch (VehicleServiceException e) {
+		//		e.printStackTrace();
+		//	} catch (UnrecognizedMeasurementTypeException e) {
+		//		e.printStackTrace();
+		//	}
+	        
 	        try {
-				mVehicleManager.addListener(TransmissionGearPosition.class, mGearListener);
-			} catch (VehicleServiceException e) {
-				e.printStackTrace();
-			} catch (UnrecognizedMeasurementTypeException e) {
-				e.printStackTrace();
-			}
+	  				mVehicleManager.addListener(GearLeverPosition.class, mGearListener);
+	  			} catch (VehicleServiceException e) {
+	  				e.printStackTrace();
+	  			} catch (UnrecognizedMeasurementTypeException e) {
+	  				e.printStackTrace();
+	  			}
+	        
+	        try {
+
+	        	mVehicleManager.addListener(VehicleDoorStatus.class, mVehicleDoorListener);
+
+	        	} catch (VehicleServiceException e) {
+
+	        	e.printStackTrace();
+
+	        	} catch (UnrecognizedMeasurementTypeException e) {
+
+	        	e.printStackTrace();
+
+	        	}
+	        
+	    //  if (setClimate == true) {
+	    	 //  setClimate = false; 
+	    	   try {
+			        mVehicleManager.send(climateCommand);
+			    } catch(UnrecognizedMeasurementTypeException e) {
+			        Log.w(TAG, "Unable to send cabin temperature command", e);
+				 	tts.speak("Sorry, not able to set cabin temperature", TextToSpeech.QUEUE_FLUSH, null);
+			    }
+		        
+	       //}
 	        
 	        
 	       // CruiseControl cmd = new CruiseControl(CruiseControl.CruiseCommands.SET);
 	       // EngineMode electricCommand = new EngineMode(EngineMode.EngineModes.EV_DRIVING);
 		    
-		   
+	  //  	tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+		 //   tts.speak("Welcome " + _userName, TextToSpeech.QUEUE_FLUSH, null); 
+		   // tts.speak("Welcome ", TextToSpeech.QUEUE_FLUSH, null);     
 	        
 	        
         }
@@ -1970,9 +2050,9 @@ final Runnable TongueRunnable = new Runnable() {
 				            	 
 					            		if (speedArray[s] - speedArray[s-(4*_rapidAccelerationEventInterval)] > _rapidAccelerationEventRate) {  //we're going up
 					            			f++;
-					            			//Log.w("openxc", "speed: " + speed);
-					       		            //Log.w("openxc", "current speed: " + speedArray[s]);
-					       		            //Log.w("openxc", "speed - 4: " + speedArray[s-4]);
+					            			Log.w("openxc", "speed: " + speed);
+					       		            Log.w("openxc", "current speed: " + speedArray[s]);
+					       		            Log.w("openxc", "speed - 4: " + speedArray[s-4]);
 					            			
 					            			//mSoundPool.stop(mStream1);
 							    	   		//mStream1 = mSoundPool.play(mSoundPoolMap.get(SHIFT_UP), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
@@ -1985,9 +2065,9 @@ final Runnable TongueRunnable = new Runnable() {
 					            		
 					            		if (f > 0 && rapidAccerlationEnded == true) { //it was an extended accerlation event
 					            			accerlationEventCost = (fuelConsumedArray[s] - fuelConsumedArray[s-(4+f)]) *  _gasGallonCost;
-					            			//Log.w("openxc", "accerlation cost: " + accerlationEventCost);
-					            			//Log.w("openxc", "f: " + f);
-					       		            //Log.w("openxc", "s: " + s);
+					            			Log.w("openxc", "accerlation cost: " + accerlationEventCost);
+					            			Log.w("openxc", "f: " + f);
+					       		            Log.w("openxc", "s: " + s);
 					            			f = 0; //reset
 					            			rapidAccerlationEnded = false;
 					            			
@@ -2100,6 +2180,20 @@ final Runnable TongueRunnable = new Runnable() {
 	       sms.sendTextMessage(phoneNumber, null, message, null, null);
 	  }
 	
+	
+	
+	BatteryLevel.Listener mButtonBatteryLevelListener = new BatteryLevel.Listener() {  //if user pressed a button on the steering wheel
+	    public void receive(Measurement measurement) {
+	    	final BatteryLevel _battery = (BatteryLevel) measurement;
+	        MainActivity.this.runOnUiThread(new Runnable() {
+	            public void run() {
+	            	mVehicleBatteryView.setText(
+	            	 	"Battery:" + _battery.getValue().toString());
+	            }
+	        });
+	    }
+	};
+	
 	VehicleButtonEvent.Listener mButtonEventWiperListener = new VehicleButtonEvent.Listener() {  //if user pressed a button on the steering wheel
 	    public void receive(Measurement measurement) {
 	    	final VehicleButtonEvent _button = (VehicleButtonEvent) measurement;
@@ -2148,7 +2242,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            
 	            	if (_ignitionSound == true) {
 	            	
-		            	if (ignitionString != null && ignitionStartPlaying == 0 && ignitionString.equals("START")) {  //valid ignition values are: 	ACCESSORY, OFF, RUN, OR START	 
+		            	if (ignitionString != null && ignitionStartPlaying == 0 && ignitionString.equals("RUN")) {  //valid ignition values are: 	ACCESSORY, OFF, RUN, OR START	 
 		            		ignitionStartPlaying = 1;  //only clear this if we go to off state
 		            		ignitionOffPlaying = 0;
 		            		mSoundPool.stop(mStream1);
@@ -2163,13 +2257,13 @@ final Runnable TongueRunnable = new Runnable() {
 		            		ignitionOffPlaying = 1;  //only clear this if we go to off state
 		            		ignitionStartPlaying = 0;
 		            		
-		            		if (gasCost > .50) {  //if low then the user must have turned on and off without going anywhere
+		            	//	if (gasCost > .50) {  //if low then the user must have turned on and off without going anywhere
 		            		    tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
         	    	    	    tts.speak("The cost of this trip was $" + gasCostString, TextToSpeech.QUEUE_FLUSH, null);    
-		            		} else {
+		            	//	} else {
 		            			mSoundPool.stop(mStream1);
 		    	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(POWERDOWN), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
-		            		}
+		            	//	}
 		            		
 		            		tripMileage = odometerValue - odometerTripStart;
 		            		
@@ -2479,6 +2573,12 @@ final Runnable TongueRunnable = new Runnable() {
 	            	
 	            	if (r == 0) {  //let's get the baseline
 	            		gasConsumedStart = gasConsumed;
+	            		
+	            	//	tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+	           		   // tts.speak("Welcome " + _userName, TextToSpeech.QUEUE_FLUSH, null); 
+	           		  //  tts.speak("Welcome ", TextToSpeech.QUEUE_FLUSH, null);     
+	            		
+	            		
 	            	}
 	            	r++;
 	            	
@@ -2587,6 +2687,22 @@ final Runnable TongueRunnable = new Runnable() {
 		            	mVehicleLightsView.setText(lightsText);
 		            	
 		            	
+		            	//highBeamsOn = _headBeam.getValue().booleanValue();
+		            	
+		            	/*if (highBeamsOn == true && highBeamSoundPlayed == false) {
+		            		highBeamSoundPlayed = true;
+		            		highBeamSoundOffPlayed = false;
+		            		mSoundPool.stop(mStream1);
+        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(HIGHBEAM_ON), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            	}
+		            	
+		            	if (highBeamsOn == false && highBeamSoundOffPlayed == false) {
+		            		highBeamSoundOffPlayed = true;
+		            		highBeamSoundPlayed = false;
+		            		mSoundPool.stop(mStream1);
+        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(HIGHBEAM_OFF), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		            	}
+		            	*/
 		            	
 		            	//mVehicleLightsView.setText("Lights: " + _headLamp.getValue().booleanValue());
 		            	
@@ -2698,9 +2814,9 @@ final Runnable TongueRunnable = new Runnable() {
 	   // }
 //	};
 	
-	TransmissionGearPosition.Listener mGearListener = new TransmissionGearPosition.Listener() {  //play rain animation
+	GearLeverPosition.Listener mGearListener = new GearLeverPosition.Listener() {  //play rain animation
 	    public void receive(Measurement measurement) {
-	    	final TransmissionGearPosition _gear = (TransmissionGearPosition) measurement;
+	    	final GearLeverPosition _gear = (GearLeverPosition) measurement;
 	        //TransmissionGearPosition.GearPosition _gear = new TransmissionGearPosition.GearPosition();
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
@@ -2779,6 +2895,90 @@ final Runnable TongueRunnable = new Runnable() {
 	    }
 	};
 	
+	VehicleDoorStatus.Listener mVehicleDoorListener = new VehicleDoorStatus.Listener() {  //play rain animation
+
+
+		public void receive(Measurement measurement) {
+
+
+		final VehicleDoorStatus _vDoorStatus = (VehicleDoorStatus) measurement;
+
+		    MainActivity.this.runOnUiThread(new Runnable() {
+
+		            public void run() {
+
+		           
+
+		              String doorVal = _vDoorStatus.getValue().toString();
+
+		          doorVal = getValueString(doorVal);
+
+		         
+
+		          if (doorVal.equals("REAR_RIGHT") && (_vDoorStatus.getEvent().booleanValue())){
+
+		       	   tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+
+		      tts.speak("Rear Right Door is Open", TextToSpeech.QUEUE_FLUSH, null); 
+
+		      mVehicleDoorView.setText("Rear Right");
+
+		  }else if(doorVal.equals("DRIVER") && (_vDoorStatus.getEvent().booleanValue())){
+
+		    tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+
+		      tts.speak("Driver Door is Open", TextToSpeech.QUEUE_FLUSH, null);
+
+		      mVehicleDoorView.setText("Driver Door");
+
+		        }else if(doorVal.equals("PASSENGER") && (_vDoorStatus.getEvent().booleanValue())){
+
+		          tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+
+		    tts.speak("Passenger Door is Open", TextToSpeech.QUEUE_FLUSH, null);  
+
+		    mVehicleDoorView.setText("Passenger");
+
+		        }else if(doorVal.equals("REAR_LEFT") && (_vDoorStatus.getEvent().booleanValue())){
+
+		        _textToSpeechflag = true;
+
+		        tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+
+		    tts.speak("Rear Left Door is Open", TextToSpeech.QUEUE_FLUSH, null);  
+
+		    mVehicleDoorView.setText("Rear Left Door");
+
+		        }else if(doorVal.equals("BOOT") && (_vDoorStatus.getEvent().booleanValue())){
+
+		        tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
+
+		    tts.speak("Trunk is Open", TextToSpeech.QUEUE_FLUSH, null);  
+
+		    _textToSpeechflag = true;
+
+		    mVehicleDoorView.setText("Boot");
+
+		        } else {
+
+		        mVehicleDoorView.setText("No Data");
+
+		        //_textToSpeechflag = false;
+
+		        }
+
+		           
+
+		            }
+
+		        });
+
+		    }
+
+		};
+
+
+	
 	public String getValueString(String str ) {  //format is like this "Percentage{value=1.23}" so our job here is to extract the 1.23 and convert that to an int
 		String[] valuePair = str.split("=");
  	    String Value = valuePair[1]; //1.23}
@@ -2801,6 +3001,19 @@ final Runnable TongueRunnable = new Runnable() {
 	@Override
 	public void onInit(int status) {
 		// TODO Auto-generated method stub
+		//we need to convert F to C first
+		mSoundPool.stop(mStream1);
+   		mStream1 = mSoundPool.play(mSoundPoolMap.get(COMPUTER_THINKING), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
+		tts.speak("Welcome " +  _userName + ", now setting the cabin temperature to your preference of " + _climateTemperature + " degrees farenheit", TextToSpeech.QUEUE_FLUSH, null);
+		setClimate = true;
+		
+		// try {
+		  //      mVehicleManager.send(climateCommand);
+		   // } catch(UnrecognizedMeasurementTypeException e) {
+		     //   Log.w(TAG, "Unable to send cabin temperature command", e);
+			 	//tts.speak("Sorry, not able to set cabin temperature", TextToSpeech.QUEUE_FLUSH, null);
+		   // }
+		
 		
 	}
 	

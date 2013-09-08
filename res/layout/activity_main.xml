@@ -233,7 +233,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Physical B1" />
+        android:text="Battery" />
     
 	<TextView
         android:id="@+id/buttonOne"

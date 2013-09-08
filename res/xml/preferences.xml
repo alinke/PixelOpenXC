@@ -36,11 +36,8 @@
    <EditTextPreference
    android:title="@string/userName"
    android:key="@string/pref_userName"
-   android:numeric="integer"
    android:defaultValue="@string/userNameDefault"
    android:summary="@string/userNameSummary"/>
-     
-     
     
     <CheckBoxPreference
     android:title="@string/highSpeedSMS"
@@ -54,6 +51,13 @@
     android:numeric="integer"
     android:defaultValue="@string/highSpeedSMSTextNumberDefault"
     android:summary="@string/highSpeedSMSTextNumberSummary"/>
+     
+    <EditTextPreference
+    android:title="@string/climateTemperature"
+    android:key="@string/pref_climateTemperature"
+    android:numeric="integer"
+    android:defaultValue="@string/climateTemperatureNumberDefault"
+    android:summary="@string/climateTemperatureSummary"/>
      
       <EditTextPreference
     android:title="@string/gasGallonCost"

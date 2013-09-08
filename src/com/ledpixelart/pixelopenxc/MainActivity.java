@@ -383,6 +383,7 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	private String _highSpeedSMSTextNumber;
 	private String gearString;
 	private String ignitionString;
+	private String batteryString;
 	//private double odometerValue;
 	
 	private ListView mList;
@@ -2187,8 +2188,14 @@ final Runnable TongueRunnable = new Runnable() {
 	    	final BatteryLevel _battery = (BatteryLevel) measurement;
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
-	            	mVehicleBatteryView.setText(
-	            	 	"Battery:" + _battery.getValue().toString());
+	            	
+	            	batteryString = _battery.getValue().toString();
+	            	batteryString = getValueString(batteryString);
+	            
+	            	mVehicleBatteryView.setText(batteryString);
+	            	
+	            //	mVehicleBatteryView.setText(
+	            	// 	"Battery:" + _battery.getValue().toString());
 	            }
 	        });
 	    }

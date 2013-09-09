@@ -53,6 +53,19 @@
     android:summary="@string/highSpeedSMSTextNumberSummary"/>
      
     <EditTextPreference
+    android:title="@string/tweetMessage"
+    android:key="@string/pref_tweetMessage"
+    android:defaultValue="@string/tweetMessageDefault"
+    android:summary="@string/tweetMessageSummary"/>
+    
+    <EditTextPreference
+    android:title="@string/scrollingTextColor"
+    android:key="@string/pref_scrollingTextColor"
+    android:numeric="integer"
+    android:defaultValue="@string/scrollingTextColorDefault"
+    android:summary="@string/scrollingTextColorSummary"/>
+     
+    <EditTextPreference
     android:title="@string/climateTemperature"
     android:key="@string/pref_climateTemperature"
     android:numeric="integer"

@@ -35,6 +35,16 @@
     <string name="pref_noSleepDefault">true</string>
     <string name="noSleepSummary">Prevents screen from turning off which would prevent this app from working</string>
     
+    <string name="tweetMessage">Twitter Text</string>  
+    <string name="pref_tweetMessage">pref_tweetMessage</string> 
+    <string name="tweetMessageDefault">Tweet Me #</string>
+    <string name="tweetMessageSummary">Encourage others to Tweet you</string>
+    
+    <string name="scrollingTextColor">Scrolling Text Color</string>  
+    <string name="pref_scrollingTextColor">pref_scrollingTextColor</string> 
+    <string name="scrollingTextColorDefault">2cff3b</string>
+    <string name="scrollingTextColorSummary">Color for the scrolling text</string>
+    
     <string name="debugMode">Debug Mode</string>    
     <string name="pref_debugMode">pref_debugMode</string>
     <string name="pref_debugModeDefault">false</string>    

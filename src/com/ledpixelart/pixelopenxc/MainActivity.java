@@ -261,6 +261,9 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
     private int _rapidAccelerationEventRate;
     private String _rapidAccelerationEventText;
     private float _rapidAccelerationEventMoney;
+    
+    private String _tweetMessage;
+    private int _scrollingTextColor;
    
     private Timer _pedalTimer;
     private Timer _birdTimer;
@@ -1282,18 +1285,7 @@ final Runnable TongueRunnable = new Runnable() {
                startActivity(installIntent);
            }
        }
-   	
-       	
-   	//String extraData=data.getStringExtra("ComingFrom");
-   	//debug_.setText(extraData);    	
-   	
-   	
    }
-   
-  
-   
-  
-   	
    
    private void setPreferences() //here is where we read the shared preferences into variables
    {
@@ -1341,13 +1333,21 @@ final Runnable TongueRunnable = new Runnable() {
    	        resources.getString(R.string.pref_rapidBrakeDisplayTime),
    	        resources.getString(R.string.rapidBrakeDisplayTimeDefault))); 
     
-     matrix_model = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
+     matrix_model = Integer.valueOf(prefs.getString(   
    	        resources.getString(R.string.selected_matrix),
    	        resources.getString(R.string.matrix_default_value))); 
      
-     _climateTemperature = Integer.valueOf(prefs.getString(   //the selected RGB LED Matrix Type
+     _climateTemperature = Integer.valueOf(prefs.getString(   
     	        resources.getString(R.string.pref_climateTemperature),
     	        resources.getString(R.string.climateTemperatureNumberDefault))); 
+     
+     _tweetMessage = prefs.getString(   
+ 	        resources.getString(R.string.pref_tweetMessage),
+ 	        resources.getString(R.string.tweetMessageDefault)); 
+     
+     _scrollingTextColor = Integer.valueOf(prefs.getString(   
+ 	        resources.getString(R.string.pref_scrollingTextColor),
+ 	        resources.getString(R.string.scrollingTextColorDefault))); 
      
      //now let's convert to Celcius
      
@@ -2566,9 +2566,6 @@ final Runnable TongueRunnable = new Runnable() {
 	        MainActivity.this.runOnUiThread(new Runnable() {
 	            public void run() {
 	            	
-	            	
-	            	
-	            	
 	            	gasConsumed = _fullConsumed.getValue().doubleValue();
 	            	gasCost = gasConsumed * _gasGallonCost;
 	                gasCostString = String.format("%.2f", gasCost);
@@ -2583,8 +2580,7 @@ final Runnable TongueRunnable = new Runnable() {
 	            		
 	            	//	tts.setLanguage(Locale.getDefault()); //let's set the language before talking, we do this dynamically as it can change mid stream
 	           		   // tts.speak("Welcome " + _userName, TextToSpeech.QUEUE_FLUSH, null); 
-	           		  //  tts.speak("Welcome ", TextToSpeech.QUEUE_FLUSH, null);     
-	            		
+	           		  //  tts.speak("Welcome ", TextToSpeech.QUEUE_FLUSH, null);   
 	            		
 	            	}
 	            	r++;
@@ -2622,11 +2618,6 @@ final Runnable TongueRunnable = new Runnable() {
 		        	    	   		g2 = 0;
 			            		}
 	            	}
-	            		
-	            	
-	            	// private double TripBaselineGas;
-	            	 //   private double TripGasConsumed;
-	            	
 	            }
 	        });
 	    }
@@ -2692,26 +2683,6 @@ final Runnable TongueRunnable = new Runnable() {
 		            	}
 		            	
 		            	mVehicleLightsView.setText(lightsText);
-		            	
-		            	
-		            	//highBeamsOn = _headBeam.getValue().booleanValue();
-		            	
-		            	/*if (highBeamsOn == true && highBeamSoundPlayed == false) {
-		            		highBeamSoundPlayed = true;
-		            		highBeamSoundOffPlayed = false;
-		            		mSoundPool.stop(mStream1);
-        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(HIGHBEAM_ON), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
-		            	}
-		            	
-		            	if (highBeamsOn == false && highBeamSoundOffPlayed == false) {
-		            		highBeamSoundOffPlayed = true;
-		            		highBeamSoundPlayed = false;
-		            		mSoundPool.stop(mStream1);
-        	    	   		mStream1 = mSoundPool.play(mSoundPoolMap.get(HIGHBEAM_OFF), streamVolume, streamVolume, 1, LOOP_1_TIME, 1f);
-		            	}
-		            	*/
-		            	
-		            	//mVehicleLightsView.setText("Lights: " + _headLamp.getValue().booleanValue());
 		            	
 		            	 if (_highBeamSound == true) {
 			            		

@@ -175,8 +175,8 @@ public class MainActivity extends IOIOActivity implements TextToSpeech.OnInitLis
 	protected TextView _field;
 	protected String _path;
 	protected boolean _taken;
-	protected static final String PHOTO_TAKEN	= "photo_taken";
-	private static final int PICTURE_RESULT = 0;
+	//protected static final String PHOTO_TAKEN	= "photo_taken";
+	//private static final int PICTURE_RESULT = 0;
     private Display display;
     private String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
     private int proxSensorEnabled = 0;

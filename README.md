@@ -6,8 +6,8 @@ Project Video https://www.youtube.com/watch?v=yT8fPqfmI7g
 __Hardware Required for this Project__
 * Android Device with Bluetooth
 * Ford Reference Vehicle ODB-II Interface https://shop.openxcplatform.com/ford-reference-vi.html
-* PIXEL: LED ART Board 
-* 32x32 LED Matrix
+* PIXEL: LED ART Board http://creativeartsandtechnology.com/product/maker/
+* 32x32 LED Matrix https://www.adafruit.com/product/1484 or eBay or Amazon
 * 5V, 2A power supply
 
 __Documentation__

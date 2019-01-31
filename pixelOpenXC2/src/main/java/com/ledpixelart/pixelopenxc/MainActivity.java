@@ -1512,7 +1512,7 @@ final Runnable TongueRunnable = new Runnable() {
    	 BitmapInputStream = getResources().openRawResource(R.raw.openxcgrey);
    	 break;
     case 2:
-   	 KIND = ioio.lib.api.RgbLedMatrix.Matrix.SEEEDSTUDIO_32x32_NEW; //v1 , this matrix has 4 IDC connectors
+   	 KIND = ioio.lib.api.RgbLedMatrix.Matrix.SEEEDSTUDIO_32x32; //v1 , this matrix has 4 IDC connectors
    	 BitmapInputStream = getResources().openRawResource(R.raw.openxcgrey);
    	 break;
     case 3:

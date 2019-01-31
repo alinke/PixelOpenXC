@@ -1,0 +1,4 @@
+#Wed Jan 30 19:40:28 PST 2019
+base.0=/Users/al/Documents/workspace 2/PixelOpenXC2/pixelOpenXC2/build/intermediates/transforms/dexMerger/debug/8
+path.0=classes.dex
+renamed.0=classes.dex

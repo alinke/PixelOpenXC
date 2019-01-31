@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PIXEL Smart Brake Light</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="menu_about_title">About</string> 
+    <string name="menu_about_summary">http://ledpixelart.com\n\nDesigned by Open Gadgets LLC</string>
+    <string name="versionString">Version</string> 
+    
+    <string name="bluetoothPairingString">Please ensure Bluetooth pairing has been completed prior. The Bluetooth pairing code is: 0000."</string>
+    
+   <string name="menu_instructions_title">Instructions</string>
+   <string name="setupInstructionsString">Pair your Android device to PIXEL which will show up as \'PIXEL\' in Bluetooth using code 0000.\n\nThis app utilizes OpenXC hardware to capture driving data, see http://openxcplatform.com for a list of supported vehicle models and required external hardware.\n\nLong tap to use voice recognition. Say \'Bird\', \'Thanks\', \'Tongue\' to send messages to the PIXEL LED Display or \'Trip\' for the trip cost and mpg readout.\n\nWhen used without OpenXC hardware, this app will still function with the PIXEL LED Display but will not display driving data.</string>
+   <string name="setupInstructionsStringTitle">Instructions</string>   
+     
+    <string name="prefTitle">PIXEL OpenXC Settings</string>
+    <string name="menu_prefs_title">Settings</string>
+    <string name="prefSummary">PIXEL OpenXC Settings</string>
+     
+    <string name="OKText">OK</string>   
+    <string name="notFoundString">PIXEL Not Found</string>   
+   
+    <string name="selected_matrix">selected_matrix</string>
+    <string name="matrix">LED Panel Model</string>
+    <string name="matrixSummary"></string>    
+    <string name="dialogTitleMatrix">LED Panel Selection</string>
+    <string name="matrix_default_value">3</string>   
+    
+    <string name="bluetooth_pair">Blueooth Pairing</string>
+    <string name="bluetooth_pairSummary">Shortcut to the Bluetooth settings screen. Pair to PIXEL using code: 0000</string>
+    
+    <string name="noSleep">Keep Screen On</string>  
+    <string name="pref_noSleep">pref_noSleep</string> 
+    <string name="pref_noSleepDefault">true</string>
+    <string name="noSleepSummary">Prevents screen from turning off which would prevent this app from working</string>
+    
+    <string name="tweetMessage">Twitter Text</string>  
+    <string name="pref_tweetMessage">pref_tweetMessage</string> 
+    <string name="tweetMessageDefault">Tweet Me #</string>
+    <string name="tweetMessageSummary">Encourage others to Tweet you</string>
+    
+    <string name="scrollingTextColor">Scrolling Text Color</string>  
+    <string name="pref_scrollingTextColor">pref_scrollingTextColor</string> 
+    <string name="scrollingTextColorDefault">2cff3b</string>
+    <string name="scrollingTextColorSummary">Color for the scrolling text</string>
+    
+    <string name="debugMode">Debug Mode</string>    
+    <string name="pref_debugMode">pref_debugMode</string>
+    <string name="pref_debugModeDefault">false</string>    
+    <string name="debugModeSummary">Displays debug messages, use to see how often the Bluetooth connections are getting disconnected and connected as well as other debug messages</string>
+  
+    <string name="soundSettings">Sound FX Events</string>    
+    <string name="accel_and_decel_events">Rapid Acceleration Detection Settings</string>    
+    <string name="PIXELSettings">PIXEL LED Display</string>    
+    
+    <string name="pedalSound">Pedal</string>    
+    <string name="pref_pedalSound">pref_pedalSound</string>
+    <string name="pedalSoundDefault">false</string>    
+    <string name="pedalSoundSummary"></string>
+    
+    <string name="msgSound">Messages</string>    
+    <string name="pref_msgSound">pref_msgSound</string>
+    <string name="msgSoundDefault">true</string>    
+    <string name="msgSoundSummary"></string>
+    
+    <string name="gearSound">Gear Changes</string>    
+    <string name="pref_gearSound">pref_gearSound</string>
+    <string name="gearSoundDefault">true</string>    
+    <string name="gearSoundSummary">Soundbyte on gear changes</string>
+    
+    <string name="gasConsumedSound">Gas Consumed</string>    
+    <string name="pref_gasConsumedSound">pref_gasConsumedSound</string>
+    <string name="gasConsumedSoundDefault">true</string>    
+    <string name="gasConsumedSoundSummary"></string>
+    
+    <string name="gasGallonCost">Gas Cost per Gallon</string>    
+    <string name="pref_gasGallonCost">pref_gasGallonCost</string>
+    <string name="gasGallonCostDefault">4.00</string>    
+    <string name="gasGallonCostSummary"></string>
+    
+    <string name="HeadlightSound">Headlights</string>    
+    <string name="pref_HeadlightSound">pref_HeadlightSound</string>
+    <string name="HeadlightSoundDefault">true</string>    
+    <string name="HeadlightSoundSummary"></string>
+
+    <string name="highBeamSound">High Beams</string>    
+    <string name="pref_highBeamSound">pref_highBeamSound</string>
+    <string name="highBeamSoundDefault">true</string>    
+    <string name="highBeamSoundSummary"></string>
+    
+    <string name="highSpeedAlarmSound">High Speed</string>    
+    <string name="pref_highSpeedAlarmSound">pref_highSpeedAlarmSound</string>
+    <string name="highSpeedAlarmSoundDefault">true</string>    
+    <string name="highSpeedAlarmSoundSummary"></string>
+    
+    <string name="highSpeedSMSTextNumber">Phone Number for SMS Text</string>    
+    <string name="pref_highSpeedSMSTextNumber">pref_highSpeedSMSTextNumber</string>
+    <string name="highSpeedSMSTextNumberDefault">4088921718</string>    
+    <string name="highSpeedSMSTextNumberSummary"></string>
+    
+    <string name="climateTemperature">Desired Cabin Temperature (F)</string>    
+    <string name="pref_climateTemperature">pref_climateTemperature</string>
+    <string name="climateTemperatureNumberDefault">70</string>    
+    <string name="climateTemperatureSummary">Valid ranges are 58 to 86 degrees Farenheit</string>
+   
+    <string name="ignitionSound">Ignition</string>    
+    <string name="pref_ignitionSound">pref_ignitionSound</string>
+    <string name="ignitionSoundDefault">true</string>    
+    <string name="ignitionSoundSummary"></string>
+  
+    <string name="wipersSound">Wipers</string>    
+    <string name="pref_wipersSound">pref_wipersSound</string>
+    <string name="wipersSoundDefault">false</string>    
+    <string name="wipersSoundSummary"></string>
+    
+    <string name="enablePedal">Pedal Bars Indicator</string>    
+    <string name="pref_enablePedal">pref_enablePedal</string>
+    <string name="enablePedalDefault">true</string>    
+    <string name="enablePedalSummary"></string>
+    
+      <string name="rapidDecelerationSound">Rapid Deceleration</string>    
+    <string name="pref_rapidDecelerationSound">pref_rapidDecelerationSound</string>
+    <string name="rapidDecelerationSoundDefault">true</string>    
+    <string name="rapidDecelerationSoundSummary">Danger Will Robinson soundbyte</string>
+    
+    <string name="enableIOIOButtons">Physical Message Buttons</string>    
+    <string name="pref_enableIOIOButtons">pref_enableIOIOButtons</string>
+    <string name="enableIOIOButtonsDefault">false</string>    
+    <string name="enableIOIOButtonsSummary">Plug physical buttons into the PIXEL board digital ports</string>
+    
+    <string name="enablePIXEL">Enable PIXEL</string>    
+    <string name="pref_enablePIXEL">pref_enablePIXEL</string>
+    <string name="enablePIXELDefault">false</string>    
+    <string name="enablePIXELSummary"></string>
+    
+    <string name="highSpeedSMS">Send Text on High Speed</string>    
+    <string name="pref_highSpeedSMS">pref_highSpeedSMS</string>
+    <string name="highSpeedSMSDefault">true</string>    
+    <string name="highSpeedSMSSummary"></string>
+    
+    <string name="highSpeedSMSThreshold">High Speed Threshold (mp/h)</string>    
+    <string name="pref_highSpeedSMSThreshold">pref_highSpeedSMSThreshold</string>
+    <string name="highSpeedSMSThresholdDefault">80</string>
+    <string name="highSpeedSMSThresholdSummary">An alarm and/or SMS will sound when the speed goes above this limit</string>
+    
+    <string name="gasTickSoundInterval">Gas Drip Threshold</string>    
+    <string name="pref_gasTickSoundInterval">pref_gasTickSoundInterval</string>
+    <string name="gasTickSoundIntervalDefault">.1</string>
+    <string name="gasTickSoundIntervalSummary">Water drop soundbyte when this much gas is consumed</string>
+    
+    <string name="gasGallonConsumedSoundInterval">Gas Gallon Threshold</string>    
+    <string name="pref_gasGallonConsumedSoundInterval">pref_gasGallonConsumedSound</string>
+    <string name="gasGallonConsumedSoundIntervalDefault">1</string>
+    <string name="gasGallonConsumedSoundIntervalSummary">Soundbyte when this much gas is consumed</string>
+    
+    <string name="rapidBrakeInterval">Rapid Deceleration Sample Interval</string>    
+    <string name="pref_rapidBrakeInterval">pref_rapidBrakeInterval</string>
+    <string name="rapidBrakeIntervalDefault">1</string>
+    <string name="rapidBrakeIntervalSummary">Duration in seconds in between speed readings, recommended not to change the default of 1 second</string>
+    
+   <string name="rapidBrakeRate">Rapid Deceleration Threshold</string>    
+   <string name="pref_rapidBrakeRate">pref_rapidBrakeRate</string>
+   <string name="rapidBrakeRateDefault">5</string>
+   <string name="rapidBrakeRateSummary">If the difference in speed within the sample interal (1 second default) is higher than this threshold, trigger the rapid decelaration indicator</string>
+   
+   <string name="rapidBrakeDisplayTime">Rapid Deceleration Display Time</string>    
+   <string name="pref_rapidBrakeDisplayTime">pref_rapidBrakeDisplayTime</string>
+   <string name="rapidBrakeDisplayTimeDefault">3</string>
+   <string name="rapidBrakeDisplayTimeSummary">How many seconds to display the rapid deceleration indicator image on PIXEL</string>
+   
+   <string name="rapidAccelerationEventEnable">Rapid Acceleration Event</string>    
+   <string name="pref_rapidAccelerationEventEnable">pref_rapidAccelerationEventEnable</string>
+   <string name="rapidAccelerationEventEnableDefault">true</string>
+   <string name="rapidAccelerationEventEnableSummary">Speaks the cost of a rapid acceleration event</string>
+   
+   <string name="rapidAccelerationEventInterval">Rapid Acceleration Interval</string>    
+   <string name="pref_rapidAccelerationEventInterval">pref_rapidAccelerationEventInterval</string>
+   <string name="rapidAccelerationEventIntervalDefault">1</string>
+   <string name="rapidAccelerationEventIntervalSummary">Default interval is 1 second</string>
+   
+   <string name="rapidAccelerationEventRate">Rapid Acceleration Threshold Rate</string>    
+   <string name="pref_rapidAccelerationEventRate">pref_rapidAccelerationEventRate</string>
+   <string name="rapidAccelerationEventRateDefault">2</string>
+   <string name="rapidAccelerationEventRateSummary">Default acceleration trigger rate is 2 mph per second</string>
+   
+   <string name="rapidAccelerationEventText">Rapid Acceleration Text</string>    
+   <string name="pref_rapidAccelerationEventText">pref_rapidAccelerationEventText</string>
+   <string name="rapidAccelerationEventTextDefault">Rapid acceleration event detected at a cost of $</string>
+   <string name="rapidAccelerationEventTextSummary">TTS text readout</string>
+   
+   <string name="rapidAccelerationEventMoney">Rapid Acceleration Money Threshold</string>    
+   <string name="pref_rapidAccelerationEventMoney">pref_rapidAccelerationEventMoney</string>
+   <string name="rapidAccelerationEventMoneyDefault">.10</string>
+   <string name="rapidAccelerationEventMoneySummary">The event will trigger if the cost is higher than this</string>
+   
+   <string name="fbombEnable">F-Bomb Button</string>    
+   <string name="pref_fbombEnable">pref_fbombEnable</string>
+   <string name="fbombEnableDefault">false</string>
+   <string name="fbombEnableSummary">Enables the F-bomb PIXEL LED display animation</string>
+   
+    <string name="userName">Your Name</string>
+   <string name="pref_userName">pref_userName</string>
+   <string name="userNameDefault">James</string>
+   <string name="userNameSummary">For the startup welcome greeting</string>
+          
+   <style name="ButtonText">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textColor">#ffffff</item>
+    <item name="android:gravity">center</item>
+    <item name="android:layout_margin">3dp</item>
+    <item name="android:textSize">30dp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:shadowColor">#000000</item>
+    <item name="android:shadowDx">1</item>
+    <item name="android:shadowDy">1</item>
+    <item name="android:shadowRadius">2</item>
+</style>
+
+    <style name="BigText">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textColor">#ffffff</item>
+    <item name="android:gravity">center</item>
+    <item name="android:layout_margin">3dp</item>
+    <item name="android:textSize">30dp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:shadowColor">#000000</item>
+    <item name="android:shadowDx">1</item>
+    <item name="android:shadowDy">1</item>
+    <item name="android:shadowRadius">2</item>
+</style>
+   
+   
+   
+</resources>

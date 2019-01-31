@@ -1,0 +1,149 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Risky Project Location:
+-----------------------
+The tools *should* handle project locations in any directory. However,
+due to bugs, placing projects in directories containing spaces in the
+path, or characters like ", ' and &, have had issues. We're working to
+eliminate these bugs, but to save yourself headaches you may want to
+move your project to a location where this is not a problem.
+/Users/al/Documents/workspace 4/PixelOpenXCAS
+                             -               
+
+Manifest Merging:
+-----------------
+Your project uses libraries that provide manifests, and your Eclipse
+project did not explicitly turn on manifest merging. In Android Gradle
+projects, manifests are always merged (meaning that contents from your
+libraries' manifests will be merged into the app manifest. If you had
+manually copied contents from library manifests into your app manifest
+you may need to remove these for the app to build correctly.
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+From IOIOLibAccessory:
+* IOIOLibAccessory.iml
+* proguard.cfg
+From IOIOLibAndroid:
+* android.iml
+* hs_err_pid2392.log
+* hs_err_pid2394.log
+* proguard.cfg
+From IOIOLibBT:
+* IOIOLibBT.iml
+* proguard.cfg
+From PixelOpenXC2:
+* .DS_Store
+* README.md
+* ic_launcher-web.png
+* proguard-project.txt
+From nonstandard-android-measurements:
+* .gitignore
+* .travis.yml
+* CONTRIBUTORS
+* LICENSE
+* README.mkd
+* docs/
+* docs/Ford Open XC Electrified Hackathon Signal List.pdf
+* pom.xml
+* scripts/
+* scripts/updatedocs.sh
+From openxc:
+* javadoc/
+* javadoc/overview.html
+* pom.xml
+* proguard.cfg
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:19.1.0
+guava-10.0.1.jar => com.google.guava:guava:10.0.1
+
+Potentially Missing Dependency:
+-------------------------------
+When we replaced the following .jar files with a Gradle dependency, we
+inferred the dependency version number from the filename. This
+specific version may not actually be available from the repository.
+If you get a build error stating that the dependency is missing, edit
+the version number to for example "+" to pick up the latest version
+instead. (This may require you to update your code if the library APIs
+have changed.)
+
+guava-10.0.1.jar => version 10.0.1 in com.google.guava:guava:10.0.1
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+In IOIOLibAndroid:
+* /Users/al/Documents/code/androidlibs2/ioio/software/IOIOLib/src/ => iOIOLibAndroid/src/main/java/
+* AndroidManifest.xml => iOIOLibAndroid/src/main/AndroidManifest.xml
+* assets/ => iOIOLibAndroid/src/main/assets
+* res/ => iOIOLibAndroid/src/main/res/
+* src/ => iOIOLibAndroid/src/main/java/
+In IOIOLibAccessory:
+* AndroidManifest.xml => iOIOLibAccessory/src/main/AndroidManifest.xml
+* assets/ => iOIOLibAccessory/src/main/assets
+* lint.xml => iOIOLibAccessory/lint.xml
+* res/ => iOIOLibAccessory/src/main/res/
+* src/ => iOIOLibAccessory/src/main/java/
+In IOIOLibBT:
+* AndroidManifest.xml => iOIOLibBT/src/main/AndroidManifest.xml
+* assets/ => iOIOLibBT/src/main/assets
+* res/ => iOIOLibBT/src/main/res/
+* src/ => iOIOLibBT/src/main/java/
+In openxc:
+* -it/libs/commons-io-2.1.jar => openxc/libs/commons-io-2.1.jar
+* -it/libs/hamcrest-all-1.3.jar => openxc/libs/hamcrest-all-1.3.jar
+* -it/libs/mockito-core-1.9.0.jar => openxc/libs/mockito-core-1.9.0.jar
+* -it/res/ => openxc/src/androidTest/res/
+* -it/src/ => openxc/src/androidTest/java/
+* AndroidManifest.xml => openxc/src/main/AndroidManifest.xml
+* assets/ => openxc/src/main/assets
+* libs/jackson-core-2.1.1.jar => openxc/libs/jackson-core-2.1.1.jar
+* res/ => openxc/src/main/res/
+* src/ => openxc/src/main/java/
+* src/com/openxc/remote/RawMeasurement.aidl => openxc/src/main/aidl/com/openxc/remote/RawMeasurement.aidl
+* src/com/openxc/remote/VehicleServiceInterface.aidl => openxc/src/main/aidl/com/openxc/remote/VehicleServiceInterface.aidl
+* src/com/openxc/remote/VehicleServiceListener.aidl => openxc/src/main/aidl/com/openxc/remote/VehicleServiceListener.aidl
+In nonstandard-android-measurements:
+* AndroidManifest.xml => nonstandardandroidmeasurements/src/main/AndroidManifest.xml
+* assets/ => nonstandardandroidmeasurements/src/main/assets
+* lint.xml => nonstandardandroidmeasurements/lint.xml
+* res/ => nonstandardandroidmeasurements/src/main/res
+* src/ => nonstandardandroidmeasurements/src/main/java/
+In PixelOpenXC2:
+* AndroidManifest.xml => pixelOpenXC2/src/main/AndroidManifest.xml
+* assets/ => pixelOpenXC2/src/main/assets
+* res/ => pixelOpenXC2/src/main/res/
+* src/ => pixelOpenXC2/src/main/java/
+* src/com/.DS_Store => pixelOpenXC2/src/main/resources/com/.DS_Store
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
